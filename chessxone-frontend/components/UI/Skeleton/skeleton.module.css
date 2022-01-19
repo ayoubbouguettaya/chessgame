@@ -1,0 +1,21 @@
+.container{
+content: ' ';
+height: 100%;
+width: 100%;
+margin: 0 auto;
+background-color:var(--dark-color);
+background-image: linear-gradient(to right, var(--dark-color) 0%, rgba(0,0,0,0.05) 20%, var(--dark-color) 40%, var(--dark-color) 100%);
+background-repeat: no-repeat;
+background-size: 450px 500px;
+animation: shimmer 1s linear infinite;
+border-radius: 8px;
+/* box-shadow: var(--box-shadow);  */
+}
+@keyframes shimmer {
+    0%{
+      background-position: -450px 0;
+    }
+    100%{
+      background-position: 450px 0;
+    }
+}

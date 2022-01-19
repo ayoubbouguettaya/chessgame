@@ -1,0 +1,42 @@
+.profile_container{
+    display: flex;
+    margin-top: 1rem;
+}
+.profile_container button:disabled,
+.profile_container input:disabled{
+    opacity: 0.5 ;
+}
+.left_side_container{
+    width: 200px;
+}
+.main_profile_container{
+    width: 100%;
+}
+.left_side_container button{
+    padding: 24px;
+    margin-bottom: 5px;
+}
+.form_container{
+    width: 500px;
+    margin: 1rem   auto;
+}
+.form_container textarea,
+.form_container input{
+    margin-top: 8px;
+}
+.form_container button{
+    margin: 5px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    min-height: 45px;
+}
+@media only screen and (max-width: 600px) {
+    .left_side_container{
+        display: none;
+    }
+    .form_container{
+        width: 98%;
+    }
+}

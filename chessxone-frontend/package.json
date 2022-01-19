@@ -1,0 +1,28 @@
+{
+  "name": "chessxone-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "export" : "next export"
+  },
+  "dependencies": {
+    "axios": "^0.22.0",
+    "firebase": "^9.1.1",
+    "joi": "^17.4.2",
+    "lodash": "^4.17.21",
+    "next": "11.1.2",
+    "react": "17.0.2",
+    "react-dom": "17.0.2",
+    "react-firebaseui": "^5.0.2",
+    "socket.io-client": "^4.2.0",
+    "use-mobile-detect-hook": "^1.0.4"
+  },
+  "devDependencies": {
+    "eslint": "7.32.0",
+    "eslint-config-next": "11.1.2"
+  }
+}

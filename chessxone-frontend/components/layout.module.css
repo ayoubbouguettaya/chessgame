@@ -1,0 +1,117 @@
+.navbar_container{
+    height: 50px;
+    background-color: var(--dark-color);
+    padding: 10px 0;
+}
+.logo{
+    cursor: pointer;
+}
+.navbar_container ul{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.navbar_container button{
+    display: flex;
+    margin-left: 5px;
+}
+.avatar_container>div,
+.avatar_container{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 5px;
+}
+.avatar_container>div{
+    width: 29px;
+    height: 29px;
+    border-radius: 50%;
+    border: 2px solid var(--purple);
+}
+.avatar_container img{
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.main_container,
+.footer_container > ul,
+.navbar_container nav{
+    max-width: 1400px;
+    margin: 0 auto;
+    color: white;
+}
+.main_container,
+.main_container>div{
+    min-height:  calc(100vh - 60px);
+}
+.footer_container{
+    height: 80px;
+    background-color: var(--dark-color);
+}
+.footer_container  ul{
+    list-style: none;
+    display: flex;
+}
+.footer_container  li{
+    margin: 5px;
+}
+.footer_container >ul>li{
+    width: 33%;
+}
+.footer_container >ul>li:last-child{
+    text-align: right;
+}
+ul.links_list{
+    height: 100%;
+    align-items: end;
+    justify-content: center;
+    font-size: 12px;
+    padding-bottom: 5px;
+}
+ul.links_list li{
+    opacity: 0.5;
+}
+ul.links_list li:hover{
+    opacity: 1;
+}
+ul.social_media_list{
+    justify-content: right;
+}
+@media only screen and (max-width: 911.98px) {
+    .main_container{
+        margin: 0 8px;
+    }
+}
+@media only screen and (max-width: 767.98px) {
+    .footer_container{
+    height: unset;
+    }
+    .footer_container >ul{
+        flex-direction: column;
+        align-items: center;
+    }
+    .footer_container >ul>li{
+        width: 90%;
+    }
+    .footer_container p{
+        text-align: center;
+    }
+}
+@media only screen and (max-width: 600px) {
+    .avatar_container>a:first-child{
+        display: none;
+    }
+    .logo{
+        width: 150px;
+        height: auto;
+    }
+    .navbar_container{
+        height: 30px;
+    }
+    .main_container,
+    .main_container>div{
+    min-height:  calc(100vh - 40px);
+    }
+}

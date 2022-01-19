@@ -1,0 +1,33 @@
+.black{
+  background-color: var(--secondary-color-square)
+}
+.white{
+  background-color: var(--primary-color-square)
+}
+.square{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: var(--secondary-color-square);
+  border-radius: 5px;
+}
+.square img{
+    height: 50px;
+    width: 50px;
+    cursor: pointer;
+}
+.selected{
+  opacity: 0.5;
+}
+.isHeilighted{
+  cursor: pointer;
+  opacity: 0.8;
+  background-image: radial-gradient(ellipse at center,  #0f04723d 5%,#11048534 27%,#2415aa48 37%,#3223bc44 47%,#3223bc18 48%);
+}
+.isPreviousTracked{
+  background-image: radial-gradient(ellipse at center,  #f8f8f83d 5%,#ffffff34 27%,#e6e4f848 37%,#c9c4f744 47%,#e8e6fd18 48%);
+}
+.isKingHighlited{
+  background-image: radial-gradient(ellipse at center,  #7204043d 5%,#85040434 27%,#aa151548 37%,#bc232344 47%,#bc232318 48%);
+}

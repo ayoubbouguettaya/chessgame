@@ -1,0 +1,97 @@
+.indicator_container{
+    height: 480px;
+    width: 140px;
+    font-size: 15px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.clock{
+    position: relative;
+    height: 140px;
+    width: 140px;
+    background-image: url("./chess-clock.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+    transform: rotate(90deg);
+}
+.player_box.is_myturn{
+opacity: 0.5;
+}
+.player_box>div{
+    padding: 10px 20px;
+}
+.clock>div:not(.is_myturn){
+    opacity: 0.8;
+    border: none;
+    height: 58px;
+    width: 58px;
+    background-color: #232a36;
+}
+.clock>div:not(.is_myturn) span{
+    opacity: 0;
+}
+.clock>div{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 50px;
+    height: 50px;
+    width: 50px;
+    font-size: 1.4rem;
+    background-color: #232a36;
+    border: 4px solid #4682b4;
+    border-radius: 50%;
+    transform: rotate(-90deg);
+}
+.clock>div.opponent{
+    left: 11px;
+}
+.clock>div.me{
+    left: 73px;
+}
+.indicator_container span{
+    color: #4682b4;
+    font-family: 'minecraft';
+}
+.indicator_container p{
+    text-align: center;
+}
+@media (max-width: 850px){
+    .indicator_container{
+        transform: scale(0.93);
+        width: 480px !important;
+    }
+}
+@media (min-width:649.98px) and (max-width: 750px){
+    .indicator_container{
+        transform: scale(0.89);
+    }
+}
+@media (max-width: 660px){
+    .indicator_container{
+        flex-direction: row-reverse;
+        height: 140px;
+        transform: scale(0.85);
+    }
+    .clock{
+        transform: rotate(0deg) scale(0.8);
+    }
+    .clock>div{
+        transform: rotate(0deg);
+    }
+    .clock>div.opponent{
+        left: 73px;
+    }
+    .clock>div.me{
+        left: 11px;
+    }
+}
+@media (max-width: 400px){
+    .indicator_container{
+        margin-top: -2rem;
+        transform: scale(0.75);
+    }
+}

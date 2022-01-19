@@ -1,0 +1,11 @@
+.password_container{
+    position: relative;
+}
+.password_container button{
+    position: absolute;
+    height: 30px;
+    min-height: unset !important;
+    width: 30px;
+    right: 5px;
+    bottom: 5px;
+}

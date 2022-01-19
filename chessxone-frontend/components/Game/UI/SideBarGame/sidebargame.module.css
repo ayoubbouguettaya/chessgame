@@ -1,0 +1,66 @@
+.pawn_promotion_box{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+.pawn_promotion_box img{
+    width: 35px;
+    height: 35px;
+}
+.pawn_promotion_box button{
+    padding: 0;
+    margin: 5px;
+}
+.side_bar_container{
+    width: 250px;
+    height: 500px;
+}
+.side_bar_container>div{
+    margin: 5px 0;
+}
+.side_bar_container img{
+    margin: 0 5px;
+}
+.status_box{
+    color: var(--purple);;
+    min-height: 80px;
+}
+.score_box{
+    color: var(--purple);
+    text-align: center;
+}
+.resign_box{
+    padding: 0;   
+}
+@media (max-width: 850px){
+    .side_bar_container{
+        transform: scale(0.9);
+    }
+}
+
+@media (min-width: 649.98px) and (max-width: 880px){
+    .side_bar_container{
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        width: 100%;
+        height: unset;
+    }
+    .status_box{
+        width: 50%;
+        min-width: 100px;
+    }
+    .resign_box>div>div{
+        display: flex;
+        width: 280px;
+    }
+    
+}
+@media (max-width: 649.98px){
+    .side_bar_container{
+        width: 100% !important;
+        height: unset;
+        display: flex;
+        flex-direction: column-reverse;
+    }
+}

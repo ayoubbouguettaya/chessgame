@@ -1,0 +1,43 @@
+.border_container{
+    position: relative;
+    padding: 10px;
+    margin: 5px;
+}
+span.border{
+    position: absolute;
+    display: block;
+    height: 25px;   
+    width: 25px;
+}
+span.border:first-child{
+    top: 0;
+    right: 0;
+    border-top: 3px solid var(--purple);
+    border-right: 3px solid var(--purple);
+}
+span.border:nth-child(2){
+    bottom: 0;
+    border-bottom: 3px solid var(--purple);
+    left: 0;
+    border-left: 3px solid var(--purple);
+
+}
+.inverted span.border:first-child{
+    border-top: 3px solid var(--dark-color);
+    border-right: 3px solid var(--dark-color);
+}
+.inverted span.border:nth-child(2){
+    border-bottom: 3px solid var(--dark-color);
+    border-left: 3px solid var(--dark-color);
+}
+
+.white span.border:first-child{
+    border-top: 3px solid white;
+    border-right: 3px solid white;
+}
+.white span.border:nth-child(2){
+    border-bottom: 3px solid white;
+    border-left: 3px solid white;
+
+}
+

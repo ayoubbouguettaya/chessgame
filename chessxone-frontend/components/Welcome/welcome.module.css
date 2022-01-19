@@ -1,0 +1,107 @@
+.hero_section_container{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    min-height: 100vh;
+}
+.hero_section_container h1{
+    font-size: 2.5rem;
+}
+.hero_section_container button.btn_inverted
+{
+   width: max-content;
+   min-height: 50px;
+   font-size: 1.2rem;
+   padding: 3px;
+}
+.btn_box{
+    padding: 15px 20px;
+}
+button.btn_inverted:hover{
+    scale: 1.02;
+}
+.rightpanel_container{
+    width: 480px;  
+}
+.rightpanel_container img{
+    width: 500px;
+    rotate: -15deg;
+    position: absolute;
+    top: 50px;
+    right: -200px;
+    height: auto;
+    border: 5px solid var(--purple);
+    border-radius: 25px;
+    object-fit: cover;
+    display: block;
+    margin: 0 auto;
+}
+  
+.leftpanel_container{
+    color: white;
+    padding: 2rem;
+    width: 100%;
+}
+.leftpanel_container li{
+    margin: 10px 0;
+}
+.leftpanel_container li>div{
+    padding: 10px;
+}
+.leftpanel_container h1{
+    width: 600px;
+}
+.leftpanel_container h3 span{
+    color: var(--purple);
+}
+.offers_section{
+    margin: 4rem auto;
+}
+.offers_section ul{
+    display: flex;
+}
+.offers_section ul>li{
+    margin: 10px;
+    width: 20%;
+    background-color: var(--dark-color);
+    padding: 2rem;
+    box-shadow: var(--box-shadow);
+    text-align: center;
+}
+@media only screen and (min-width: 830px) and (max-width: 950px) {
+    .rightpanel_container img,
+    .rightpanel_container{
+        width: 390px;
+    }
+}
+@media only screen and (max-width: 900px) {
+    .offers_section ul{
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+    }
+    .offers_section ul>li{
+        width: 35%;
+        max-width: unset;
+    }
+}
+@media only screen and (max-width: 830px) {
+    .rightpanel_container{
+        display: none;
+    }
+    .leftpanel_container{
+    width: 90%;
+    }
+    .leftpanel_container h1{
+     width: 100%
+    }
+}
+@media only screen and (max-width: 600px) {
+    .offers_section ul{
+        flex-direction: column;
+    }
+    .offers_section ul>li{
+    width: 75%;
+    }
+}

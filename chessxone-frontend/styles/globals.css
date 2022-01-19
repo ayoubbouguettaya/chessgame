@@ -1,0 +1,91 @@
+@font-face {
+  font-family: "karmasuture";
+  src: local("karmasuture"),
+   url("./fonts/karmasuture.ttf") format("truetype");
+  }
+  @font-face {
+    font-family: "minecraft";
+    src: local("minecraft"),
+     url("./fonts/MinecraftTen-VGORe.ttf") format("truetype");
+  }
+  
+/* Works on Chrome/Edge/Safari */
+*::-webkit-scrollbar {
+  width: 10px;
+}
+*::-webkit-scrollbar-track {
+  background: #c3c2c3;
+}
+*::-webkit-scrollbar-thumb {
+  background-color: var(--secondary-dark-color);
+  border-radius: 20px;
+  border: 3px solid #c3c2c3;
+}
+  *{
+    scrollbar-width: thin;
+    scrollbar-color: var(--secondary-dark-color) #c3c2c3;
+  }
+:root{
+--dark-color: #16161d;
+--secondary-dark-color: #18181d;
+--purple: #4682b4;
+--secondary-color-square: #232a36;
+--primary-color-square: #5e727b;
+--third-color: #282633;
+overflow-x: hidden;
+--box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+body {
+margin: 0;
+font-family: 'karmasuture' ;
+-webkit-font-smoothing: antialiased;
+-moz-osx-font-smoothing: grayscale;
+background-color: var(--secondary-dark-color);
+}
+button{
+cursor: pointer;
+width: 100%;
+padding: 12px;
+color: white;
+border: none;
+border-radius: 5px;
+box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+background-color: var(--dark-color);
+font-family: 'karmasuture' ;
+}
+button:active{
+  outline:  2px solid;
+}
+button:hover{
+scale: 1.02;
+}
+button:disabled{
+  opacity: 0.8;
+}
+a{
+  text-decoration: none;
+  color: white;
+}
+textarea,
+input{
+width: 100%;
+box-sizing: border-box;
+background-color: var(--secondary-dark-color);
+color: white;
+padding: 10px 15px;
+border: 1px solid var(--purple);
+margin-bottom: 5px;
+outline: none;
+opacity: 0.9;
+}
+li{
+list-style-type: none;
+}
+ul{
+padding: 0;
+margin: 0;
+}
+.icon{
+width: 18px;
+height: 18px;
+}

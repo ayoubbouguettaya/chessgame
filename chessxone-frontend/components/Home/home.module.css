@@ -1,0 +1,281 @@
+.home_container{
+  display: flex;
+}
+.navigation_mobile{
+    display: none;
+}
+.home_container h1{
+    font-size: 1.4rem;
+}
+.home_container h2{
+    margin: 0;
+}
+.home_container button{
+width: unset;
+box-shadow: unset;
+}
+.home_container button.secondary{
+    background-color: var(--third-color);
+    color: var(--purple);
+    border: 1px solid  var(--secondary-dark-color);
+    border-radius: 3px;
+}
+.sidebar_container{
+    width: 300px;
+    height: calc(100vh - 60px);
+    background-color: var(--dark-color);
+    color: #999;
+}
+.heading{
+    display: flex;
+    align-items: center;
+}
+.heading img{
+    margin: 5px;
+}
+
+.sidebar_container>*{
+    margin: 5px 10px;
+}
+.sidebar_container:first-child{
+    width: 350px;
+}
+.sidebar_container .item{
+    padding: 5px 10px;
+    display: flex;
+    align-items: center;
+}
+.sidebar_container .item>div:nth-child(2){
+    margin-left: 10px;
+}
+.sidebar_container .item p{
+    margin: 0;
+}
+.sidebar_container .item img{
+    margin-right: 5px;
+}
+.label_id_copy {
+    display: flex;
+    align-items: center;
+}
+.label_id_copy>*{
+    height: 40px;
+    margin: 0;
+    width: 100px;
+    border: 1px solid var(--purple);
+    border-radius: 0;
+}
+.label_id_copy input,
+.label_id_copy p{
+    border-right: unset;
+    box-sizing: border-box;
+    padding: 8px 0  8px 4px;
+}
+.label_id_copy input,
+.label_id_copy button{
+    border-left: unset;
+}
+.label_id_copy input{
+    width: 100%;
+}
+.label_id_copy button{
+background-color: transparent;
+}
+.label_id_copy #copy_icon,
+.label_id_copy #check_icon{
+margin-left: 5px;
+transition: all ease-in-out 200ms;
+}
+.label_id_copy #copy_icon{
+    opacity: 1;
+    width: unset;
+}
+.label_id_copy #check_icon{
+    opacity: 0;
+    width: 0px;
+}
+button.copy_trigged #copy_icon{
+    opacity: 0;
+    width: 0px;
+}
+button.copy_trigged #check_icon{
+    opacity: 1;
+    margin-left: 1px;
+}
+.avatar{
+    position: relative;
+    margin-right: 5px;
+}
+.avatar img{
+    width: 25px;
+    height: 25px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+.avatar span{
+    position: absolute;
+    height: 7px;
+    width: 7px;
+    bottom: 1px;
+    right: -1px;
+    border: 2px solid var(--dark-color);
+    border-radius: 50%;
+}
+.sidebar_container .heading p{
+    padding: 5px 10px;
+    margin: 0;
+}
+.center_container{
+    width: 100%;
+}
+.center_container>*{
+    margin-left: 15px ;
+}
+.add_friend_container{
+    min-height: 100px;
+}
+.add_friend_container .input_container{
+    display: flex;
+}
+.add_friend_container .user_avatar_name{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.friend_invitation_container .loading_container,
+.add_friend_container .loading_container{
+    transform: scale(0.5);
+}
+.friend_invitation_container .loading_container>div,
+.add_friend_container .loading_container>div{
+    margin: 20px 75px;
+}
+.input_container input{
+    width: 100%;
+    border-right: unset;
+    padding-right: 0;
+    margin: 0;
+}
+.input_container button{
+    border: 1px solid var(--purple);
+    border-left: unset;
+    border-radius: unset;
+}
+.friend_invitation_container{
+    margin-top: 3rem;
+}
+.friend_invitation_container .tabs_container{
+display: flex;
+}
+.tabs_container button.tab{
+    border-radius: unset;
+    opacity: 0.5;
+}
+.tabs_container button.tab.active{
+    border-bottom: 2px solid var(--purple);
+    opacity: unset;
+}
+.friend_invitation_container .tab_panel{
+    padding: 5px;
+}
+.friend_invitation_container .tab_panel li{
+    border-bottom: 1px solid var(--purple);
+    padding: 10px 5px;
+}
+.friend_invitation_container .tab_panel li button{
+    background-color: var(--purple);
+    color: var(--dark-color);
+    padding: 8px;
+}
+.online_friends_list .is_loading{
+    opacity: 0.3;
+}
+.online_friends_list button{
+    margin-top: 3px;
+    padding: 3px 15px;
+}
+.waiting_opponent_container{
+    width: 90%;
+    margin: 1rem auto;
+    padding: 1rem;
+    border-radius: 10px;
+    box-shadow: var(--box-shadow);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+.waiting_opponent_container .avatar{
+    display: flex;
+    align-items: center;
+}
+.waiting_opponent_container .avatar p{
+    margin-left: 8px;
+}
+.suggested_player_container ul{
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+}
+.suggested_player_container li{
+    width: max-content;
+    padding: 1rem;
+    box-shadow: var(--box-shadow);
+}
+.game_request_container ul{
+    margin-top: 1rem;
+    display: flex;
+}
+.game_request_container li{
+ width: 200px;
+ margin: 5px;
+ box-shadow: var(--box-shadow);
+ background-color: var(--dark-color);
+ padding: 10px;
+ border-radius: 8px;
+}
+@media (max-width: 768px){
+    .sidebar_container{
+    width: 100% !important;
+    height: unset;
+    }
+    .sidebar_container,
+    .center_container{
+        display: none;
+    }
+    .sidebar_container.display,
+    .center_container.display{
+        display: unset !important;
+    }
+    .navigation_mobile{
+        display: flex;
+        height: calc(100vh - 60px);
+        width: 60px;
+        background-color: var(--dark-color);
+        flex-direction: column;
+    }
+    .navigation_mobile .active_tab {
+        border-radius: 0;
+        border-left: 3px solid var(--purple);
+    }
+    .navigation_mobile span{
+        background-color: orange;
+        color: var(--dark-color);
+        font-size: 10px;
+        padding:2px 5px ;
+        border-radius: 50%;
+    }
+    .waiting_opponent_container{
+     flex-wrap: wrap;
+    }
+
+}
+@media (max-width: 400px){
+    .suggested_player_container ul{
+        flex-direction: column;
+        align-items: center;
+    }
+    .suggested_player_container li{
+        min-width:150px ;
+    }
+}
+
