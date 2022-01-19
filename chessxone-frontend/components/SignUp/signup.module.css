@@ -1,0 +1,79 @@
+.signup_container h1{
+    text-align: center;
+    max-width: 350px;
+    margin: 0 auto;
+}
+.signup_container label{
+    color: var(--purple);
+}
+.signup_container textarea,
+.signup_container input{
+    margin-top: 8px;
+}
+.signup_container button{
+    margin: 5px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    min-height: 45px;
+}
+.avatar_container{
+    width: max-content;
+    margin: 1rem auto;
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    border: 3px solid var(--purple);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1px;
+}
+.avatar_container>div,
+.avatar_container img{
+    border-radius: 50%;
+    width: 96px;
+    height: 96px;
+}
+.avatar_container.disabled,
+p.disabled{
+    opacity: .5;
+}
+.firebase_auth_container{
+     background-color: var(--dark-color); 
+    box-shadow: var(--box-shadow); 
+   max-width: 400px;
+   min-height: 400px;
+   margin: 2rem auto;
+    padding: 2rem ;
+}
+.form_container{
+    max-width: 400px;
+    margin: 2rem auto;
+}
+.form_container label{
+    color: white;
+}
+.divider{
+    text-align: center;
+     margin-bottom: 2rem;
+    color: var(--purple);
+}
+.firebase_error_display{
+    background: rgb(122, 174, 204);
+    width: 100%;
+    min-height: 40px;
+    border-radius: 5px;
+    padding: 7px 16px;
+    color: var(--dark-color);
+    animation: animateError 500ms forwards;
+}
+@keyframes animateError{
+    0%{
+        opacity: 0%;
+    }
+    100%{
+        opacity: 100%;
+    }
+}

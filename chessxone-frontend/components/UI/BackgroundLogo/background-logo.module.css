@@ -1,0 +1,16 @@
+.container{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+.container img{
+    opacity: 0.1;
+    max-width: 300px;
+    height: auto;
+}
+.container p{
+    color: var(--purple);
+}

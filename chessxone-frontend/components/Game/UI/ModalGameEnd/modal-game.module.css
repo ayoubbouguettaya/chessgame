@@ -1,0 +1,27 @@
+.modal_container{
+    position: fixed;
+    z-index: 2;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #18181daa ;
+}
+.modal_container,
+.modal_container>div{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.modal_container>div{
+    min-height: 250px;
+    padding: 4rem;
+    background-color: var(--dark-color);
+    color: var(--purple);
+    opacity: .95;
+    border-radius: 10px;
+}
+.modal_container p {
+    text-align: center;
+}

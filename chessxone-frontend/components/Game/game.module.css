@@ -1,0 +1,31 @@
+.game_container{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.loading_container{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 200px);
+}
+.loading_container p{
+    font-size: 1.2rem;
+}
+@media (max-width: 880px){
+    .game_container{
+        flex-wrap: wrap;
+    }
+}
+@media (max-width: 660px){
+    .game_container{
+        flex-direction: column;
+        align-content: center;
+    }
+}
+@media (max-width: 400px){
+    .game_container{
+        margin-top: -2rem;
+    transform: scale(0.9);
+    }
+}
