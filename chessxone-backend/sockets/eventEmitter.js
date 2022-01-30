@@ -2,7 +2,7 @@ const io = require('../config/socketIO-instance');
 
 /*  General Events */
 
-const nofityAllconnectedFriends = async (connectedFriends, userData, Event = 'friend_changed_status') => {
+const nofityAllconnectedFriends = async (connectedFriends, userData, event = 'friend_changed_status') => {
     try {
         for (let i = 0; i < connectedFriends.length; i++) {
             const friendID = connectedFriends[i]._id.toString();

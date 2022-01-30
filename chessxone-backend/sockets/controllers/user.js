@@ -139,16 +139,16 @@ const requestGame = async (hosterID, guestID) => {
         await UserGamesInvitationsOnRedis.push(guestID, hosterID)
         await UserOnRedis.setIsLocked(hosterID, true);
 
-        const friendToNotifyGameCancled = await UserGamesInvitationsOnRedis.get(hosterID)
+        const playerToNotifyGameCancled = await UserGamesInvitationsOnRedis.get(hosterID)
 
-        if (friendToNotifyGameCancled) {
+        if (playerToNotifyGameCancled) {
             UserGamesInvitationsOnRedis.clear(hosterID)
-            for (let i = 0; i < friendToNotifyGameCancled.length; i++) {
-                await UserGameRequestOnRedis.clear(friendToNotifyGameCancled[i])
+            for (let i = 0; i < playerToNotifyGameCancled.length; i++) {
+                await UserGameRequestOnRedis.clear(playerToNotifyGameCancled[i])
             }
         }
 
-        return friendToNotifyGameCancled;
+        return playerToNotifyGameCancled;
 
     } catch (error) {
         return error;
@@ -160,16 +160,16 @@ const prepareCreateGame = async (guestID, hosterID) => {
         await UserGameRequestOnRedis.clear(hosterID)
         await UserOnRedis.setIsLocked(guestID, true);
 
-        const friendToNotifyGameCancled = await UserGamesInvitationsOnRedis.get(guestID)
+        const playerToNotifyGameCancled = await UserGamesInvitationsOnRedis.get(guestID)
 
-        if (friendToNotifyGameCancled) {
+        if (playerToNotifyGameCancled) {
             UserGamesInvitationsOnRedis.clear(guestID)
-            for (let i = 0; i < friendToNotifyGameCancled.length; i++) {
-                await UserGameRequestOnRedis.clear(friendToNotifyGameCancled[i])
+            for (let i = 0; i < playerToNotifyGameCancled.length; i++) {
+                await UserGameRequestOnRedis.clear(playerToNotifyGameCancled[i])
             }
         }
 
-        return friendToNotifyGameCancled;
+        return playerToNotifyGameCancled;
     } catch (error) {
         return error;
     }

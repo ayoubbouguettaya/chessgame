@@ -8,10 +8,10 @@ exports.getUserGameRequest = async (req, res, next) => {
     try {
         const { userID } = req.params;
 
-
         const userGameRequestSet = await UserSocketController.getUserGameRequest(userID)
+
         if (!userGameRequestSet) {
-            return res.sendStatus(404)
+            return res.sendStatus(404);
         }
 
         return res.status(200).send(userGameRequestSet)
@@ -39,19 +39,19 @@ exports.getUserGameInvitation = async (req, res, next) => {
 exports.requestGame = async (req, res, next) => {
     try {
         const { userID } = req.params;
-        const { userID: friendID } = req.body;
+        const { userID: opponentID } = req.body;
 
-        if (!await UserSocketController.isAllowedToRequestGame(userID, friendID)) {
+        if (!await UserSocketController.isAllowedToRequestGame(userID, opponentID)) {
             return res.sendStatus(403)
         }
 
-        const friendToNotifyGameCancled = await UserSocketController.requestGame(userID, friendID)
+        const playerToNotifyGameCancled = await UserSocketController.requestGame(userID, opponentID)
 
-        if (friendToNotifyGameCancled) {
-            await eventEmitter.notifyallUserRequestGameCancled(friendToNotifyGameCancled, userID)
+        if (playerToNotifyGameCancled) {
+            await eventEmitter.notifyallUserRequestGameCancled(playerToNotifyGameCancled, userID)
         }
 
-        eventEmitter.emitNewGameInvitation(friendID, userID)
+        eventEmitter.emitNewGameInvitation(opponentID, userID)
 
         return res.sendStatus(200);
     } catch (error) {
@@ -62,25 +62,25 @@ exports.requestGame = async (req, res, next) => {
 exports.acceptGame = async (req, res, next) => {
     try {
         const { userID } = req.params;
-        const { userID: friendID } = req.body;
-        if (!await UserSocketController.isAllowedToApproveGame(userID, friendID)) {
+        const { userID: opponentID } = req.body;
+        if (!await UserSocketController.isAllowedToApproveGame(userID, opponentID)) {
             return res.sendStatus(403)
         }
 
-        const friendToNotifyGameCancled = await UserSocketController.prepareCreateGame(userID, friendID)
+        const playerToNotifyGameCancled = await UserSocketController.prepareCreateGame(userID, opponentID)
 
-        if (friendToNotifyGameCancled) {
-            await eventEmitter.notifyallUserRequestGameCancled(friendToNotifyGameCancled, userID)
+        if (playerToNotifyGameCancled) {
+            await eventEmitter.notifyallUserRequestGameCancled(playerToNotifyGameCancled, userID)
         }
 
-        const gameInfo = await GameSocketController.createGame(friendID, userID)
+        const gameInfo = await GameSocketController.createGame(opponentID, userID)
         await UserStat.findOneAndUpdate({ userID }, { $inc: { gamesCount: 1 } }, { upsert: true })
-        await UserStat.findOneAndUpdate({ userID: friendID }, { $inc: { gamesCount: 1 } }, { upsert: true })
+        await UserStat.findOneAndUpdate({ userID: opponentID }, { $inc: { gamesCount: 1 } }, { upsert: true })
 
         await UserSocketController.joinGame(userID, gameInfo)
-        await UserSocketController.joinGame(friendID, gameInfo)
+        await UserSocketController.joinGame(opponentID, gameInfo)
         await eventEmitter.emitNewGame(userID, gameInfo)
-        await eventEmitter.emitNewGame(friendID, gameInfo)
+        await eventEmitter.emitNewGame(opponentID, gameInfo)
 
         return res.sendStatus(200);
     } catch (error) {
