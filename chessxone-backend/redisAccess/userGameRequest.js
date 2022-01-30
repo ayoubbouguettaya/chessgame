@@ -15,8 +15,7 @@ const set = async (userID, opponentID) => {
     try {
         await redisCommand.hmSet(
             generate_UserGameRequest_Key(userID),
-            {opponentID,issued_at: new Date()},
-            {min: 15})
+            {opponentID,issued_at: new Date()})
         return;
     } catch (error) {
         return error;
