@@ -15,7 +15,9 @@ const JoinGameRequesting = () => {
             const { data } = await fetchApi.get({ url: `/user-game/${userID}/invitations` })
             dispatch({ type: SET_USER_GAME_INVITATIONS, payload: { userGameInvitations: data } })
         } catch (error) {
-
+            throw new Error('get games invitations failed')
+        }finally{
+            return;
         }
     }
 
@@ -23,7 +25,9 @@ const JoinGameRequesting = () => {
         try {
             await fetchApi.put({ url: `/user-game/${userID}/accept`, data: { userID: friendID } });
         } catch (error) {
-            console.log('join game error')
+            throw new Error('join game failed')
+        }finally{
+            return;
         }
     }
 
@@ -35,8 +39,8 @@ const JoinGameRequesting = () => {
         <div className={styles.game_request_container}>
             <ul>
                 {userGameInvitations &&
-                    userGameInvitations.map((friendID) => (
-                        <FriendRequestingItem joinGame={() => { joinGame(friendID) }} key={friendID} friendID={friendID} userID={userID}
+                    userGameInvitations.map((opponentID) => (
+                        <FriendRequestingItem joinGame={() => { joinGame(opponentID) }} key={opponentID} opponentID={opponentID}
                         />))}
             </ul>
         </div>
@@ -46,18 +50,17 @@ const JoinGameRequesting = () => {
 export default JoinGameRequesting
 
 
-const FriendRequestingItem = ({ friendID, userID, joinGame, message = '' }) => {
+const FriendRequestingItem = ({ opponentID, joinGame, message = '' }) => {
     const [friendInfo, setFriendInfo] = useState(null)
     const [isLoading, setIsLoading] = useState(false);
 
     const getFriendInfo = async () => {
         try {
             setIsLoading(true)
-            const { data } = await fetchApi.get({ url: `/users/${userID}/friend-info/${friendID}` })
-
+            const { data } = await fetchApi.get({ url: `/users/${opponentID}/user-info/` })
             setFriendInfo(data)
         } catch (error) {
-            console.log('error*********',error.message)
+            
         } finally {
             setIsLoading(false)
         }
@@ -68,6 +71,7 @@ const FriendRequestingItem = ({ friendID, userID, joinGame, message = '' }) => {
     }, [])
 
     if (isLoading || !friendInfo) {
+        
         return (<li><Skeleton width="100%" height="160px" /></li>)
     }
 

@@ -8,16 +8,15 @@ import { SET_USER_GAME_REQUEST } from '../../../store/user/actions';
 
 const WaitingOpponent = () => {
     const { dispatch, state: { user: { _id: userID }, userGameRequest } } = useContext(userContext);
-
+    
     const getUserGameRequest = async () => {
         try {
             const { data: { opponentID } } = await fetchApi.get({ url: `/user-game/${userID}/request` });
             if(opponentID){
-                const { data } = await fetchApi.get({ url: `/users/${userID}/friend-info/${opponentID}` })
+                const { data } = await fetchApi.get({ url: `/users/${opponentID}/user-info/` });
                 dispatch({ type: SET_USER_GAME_REQUEST, payload: { userGameRequest: data } });
             }
         } catch (error) {
-
         }
     }
 
