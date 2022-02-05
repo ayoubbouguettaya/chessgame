@@ -1,3 +1,7 @@
+span.small{
+    font-size: 13px;
+    opacity: 0.5;
+}
 .home_container{
   display: flex;
 }
@@ -6,9 +10,6 @@
 }
 .home_container h1{
     font-size: 1.4rem;
-}
-.home_container h2{
-    margin: 0;
 }
 .home_container button{
 width: unset;
@@ -104,7 +105,7 @@ button.copy_trigged #check_icon{
 }
 .avatar{
     position: relative;
-    margin-right: 5px;
+    margin-right: 10px;
 }
 .avatar img{
     width: 25px;
@@ -198,11 +199,23 @@ display: flex;
     width: 90%;
     margin: 1rem auto;
     padding: 1rem;
-    border-radius: 10px;
+    border-radius: 8px;
     box-shadow: var(--box-shadow);
     display: flex;
     justify-content: space-around;
     align-items: center;
+}
+.waiting_opponent_container h2{
+    margin-top: 0;
+}
+.game_request_container .user_container,
+.waiting_opponent_container .user_container{
+    display: flex;
+    align-items: center;
+}
+.game_request_container .user_container>p,
+.waiting_opponent_container .user_container>p{
+    width: 130px;
 }
 .waiting_opponent_container .avatar{
     display: flex;
@@ -217,21 +230,35 @@ display: flex;
     flex-wrap: wrap;
 }
 .suggested_player_container li{
-    width: max-content;
+    width: 180px;
     padding: 1rem;
     box-shadow: var(--box-shadow);
+}
+.suggested_player_container li>div{
+    display: flex;
+    align-items: center;
+}
+.suggested_player_container li .footer{
+    margin-top: 8px;
+    justify-content: space-between;
 }
 .game_request_container ul{
     margin-top: 1rem;
     display: flex;
 }
 .game_request_container li{
- width: 200px;
- margin: 5px;
- box-shadow: var(--box-shadow);
- background-color: var(--dark-color);
- padding: 10px;
- border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    width: 100%;
+    /* height: 70px; */
+    min-width: 250px;
+    margin: 5px;
+    box-shadow: var(--box-shadow);
+    background-color: var(--dark-color);
+    padding: 10px;
+    border-radius: 8px;
 }
 @media (max-width: 768px){
     .sidebar_container{

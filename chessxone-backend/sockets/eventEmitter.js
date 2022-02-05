@@ -30,9 +30,17 @@ const notifyallUserRequestGameCancled = async (friendsRequestGame, userID) => {
     }
 }
 
-const emitSession = async (userID, connectedFriends,gameID) => {
+const nofityHosterGameDeclined = async (hosterID, guestID) => {
     try {
-        await io.to(userID).emit("session", { connectedFriends,gameID });
+        await io.to(hosterID).emit("request_game_declined", { guestID });
+    } catch (error) {
+        return error;
+    }
+}
+
+const emitSession = async (userID, connectedFriends, gameID) => {
+    try {
+        await io.to(userID).emit("session", { connectedFriends, gameID });
         return;
     } catch (error) {
         return error;
@@ -52,7 +60,7 @@ const emitNewFriend = async (userID, friendInfo) => {
     try {
         /* Approve */
         await io.to(userID).emit("add_new_friend", friendInfo);
-        
+
         return;
     } catch (error) {
         return error;
@@ -78,9 +86,9 @@ const emitNewGameInvitation = async (userID, opponentID) => {
     }
 }
 
-const emitNewGame = async (userID,gameInfo) => {
+const emitNewGame = async (userID, gameInfo) => {
     try {
-        await io.to(userID).emit("new_game_ready",gameInfo);
+        await io.to(userID).emit("new_game_ready", gameInfo);
         return;
     } catch (error) {
         return error;
@@ -98,9 +106,9 @@ const emitRequestGameCancled = async (friendID, userID) => {
 }
 
 // Game Emitters 
-const emitGameStart = async (userID,gameInfo) => {
+const emitGameStart = async (userID, gameInfo) => {
     try {
-        await io.to(userID).emit("game_start",gameInfo);
+        await io.to(userID).emit("game_start", gameInfo);
         return;
     } catch (error) {
         return error;
@@ -125,9 +133,9 @@ const emitGameNotAvailable = async (userID) => {
     }
 }
 
-const emitMove = async (userID,move) => {
+const emitMove = async (userID, move) => {
     try {
-        await io.to(userID).emit('move',move);
+        await io.to(userID).emit('move', move);
         return;
     } catch (error) {
         return error;
@@ -136,7 +144,7 @@ const emitMove = async (userID,move) => {
 
 const emitCastleMove = async (userID, side) => {
     try {
-        await io.to(userID).emit("castle_king",{side});
+        await io.to(userID).emit("castle_king", { side });
         return;
     } catch (error) {
         return error;
@@ -147,7 +155,7 @@ const emitPawnPromotion = async (userID, piece) => {
     try {
         await io.to(userID).emit("pawn_promotion", { piece })
     } catch (error) {
-        return error;        
+        return error;
     }
 }
 
@@ -155,12 +163,13 @@ const emitGameEnd = async (userID, { winner, endedBy }) => {
     try {
         await io.to(userID).emit("game_end", { endedBy, winner })
     } catch (error) {
-        return error;        
+        return error;
     }
 }
 
 
 module.exports = {
+    nofityHosterGameDeclined,
     nofityAllconnectedFriends,
     emitSession,
     emitFriendChangedStatus,

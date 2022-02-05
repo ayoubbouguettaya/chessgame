@@ -21,7 +21,7 @@ return error;
  
 const push = async (guestID,hosterID) => {
     try {
-     await redisCommand.sadd(generate_UserGameInvitation_Key(guestID), hosterID,{min: 30})
+     await redisCommand.sadd(generate_UserGameInvitation_Key(guestID), hosterID )
     } catch (error) {
         return error
     }

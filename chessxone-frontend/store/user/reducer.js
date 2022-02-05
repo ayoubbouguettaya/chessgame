@@ -21,7 +21,9 @@ import {
     USER_GAME_REQUEST_SUCCESS,
     NEW_GAME_READY,
 
-    CLEAR_TAB_NOTIFICATION
+    CLEAR_TAB_NOTIFICATION,
+    REMOVE_USER_GAME_REQUEST,
+    REMOVE_USER_GAME_INVITATION
 } from './actions';
 
 const globalReducer = (state, action) => {
@@ -109,7 +111,7 @@ const globalReducer = (state, action) => {
 
         case USER_GAME_REQUEST_SUCCESS: {
             const { _id, userName, picture, tagID } = action.payload;
-            const newUserGameRequest = { _id, userName, picture, tagID };
+            const newUserGameRequest = { _id, userName, picture, tagID ,issuedXXSecondsAgo: 1};
             const { notificationTab } = state;
             notificationTab.push('LOBBY')
             return { ...state, userGameRequest: newUserGameRequest, notificationTab: [...notificationTab] }
@@ -208,6 +210,31 @@ const globalReducer = (state, action) => {
             }
         }
 
+        case REMOVE_USER_GAME_REQUEST: {
+            return { ...state, userGameRequest: undefined }
+        }
+
+        case REMOVE_USER_GAME_INVITATION: {
+            const { _id } = action.payload;
+            const { userGameInvitations, connectedFriends } = state;
+
+            let newUserGameInvitations = new Set(userGameInvitations);
+
+            if (userGameInvitations.includes(_id)) {
+                newUserGameInvitations.delete(_id);
+            }
+            /* */
+            const index = connectedFriends ? connectedFriends.findIndex((ele) => (ele._id === _id)) : -1;
+            if (index !== -1) {
+                connectedFriends[index].isLocked = false;
+            }
+            /* */
+            return {
+                ...state,
+                userGameInvitations: [...newUserGameInvitations],
+                connectedFriends: [...connectedFriends],
+            }
+        }
 
         case CLEAR_TAB_NOTIFICATION: {
             const { notificationTab } = state;
