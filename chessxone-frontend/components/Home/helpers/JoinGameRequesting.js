@@ -5,7 +5,8 @@ import styles from '../home.module.css'
 import fetchApi from '../../../utils/apiFetch';
 import { userContext } from '../../../store/user/context';
 import Skeleton from '../../UI/Skeleton';
-import { SET_USER_GAME_INVITATIONS } from '../../../store/user/actions';
+import { REMOVE_USER_GAME_INVITATION, SET_USER_GAME_INVITATIONS } from '../../../store/user/actions';
+import useCounterDisplay from '../../hook/useCounterDisplay';
 
 const JoinGameRequesting = () => {
     const { dispatch, state: { user: { _id: userID }, userGameInvitations } } = useContext(userContext);
@@ -16,17 +17,28 @@ const JoinGameRequesting = () => {
             dispatch({ type: SET_USER_GAME_INVITATIONS, payload: { userGameInvitations: data } })
         } catch (error) {
             throw new Error('get games invitations failed')
-        }finally{
+        } finally {
             return;
         }
     }
 
-    const joinGame = async (friendID) => {
+    const joinGame = async (opponentID) => {
         try {
-            await fetchApi.put({ url: `/user-game/${userID}/accept`, data: { userID: friendID } });
+            await fetchApi.put({ url: `/user-game/${userID}/accept`, data: { userID: opponentID } });
         } catch (error) {
             throw new Error('join game failed')
-        }finally{
+        } finally {
+            return;
+        }
+    }
+
+    const declineGame = async (opponentID) => {
+        try {
+            await fetchApi.put({ url: `/user-game/${userID}/decline`, data: { userID: opponentID } });
+            dispatch({ type: REMOVE_USER_GAME_INVITATION, payload: { _id: opponentID } })
+        } catch (error) {
+            throw new Error('decline game failed')
+        } finally {
             return;
         }
     }
@@ -40,7 +52,11 @@ const JoinGameRequesting = () => {
             <ul>
                 {userGameInvitations &&
                     userGameInvitations.map((opponentID) => (
-                        <FriendRequestingItem joinGame={() => { joinGame(opponentID) }} key={opponentID} opponentID={opponentID}
+                        <FriendRequestingItem
+                            declineGame={() => declineGame(opponentID)}
+                            joinGame={() => { joinGame(opponentID) }}
+                            key={opponentID}
+                            opponentID={opponentID}
                         />))}
             </ul>
         </div>
@@ -50,17 +66,27 @@ const JoinGameRequesting = () => {
 export default JoinGameRequesting
 
 
-const FriendRequestingItem = ({ opponentID, joinGame, message = '' }) => {
+const FriendRequestingItem = ({ opponentID, joinGame, declineGame }) => {
     const [friendInfo, setFriendInfo] = useState(null)
     const [isLoading, setIsLoading] = useState(false);
+    const { count, display, startCount } = useCounterDisplay(10);
+
 
     const getFriendInfo = async () => {
         try {
-            setIsLoading(true)
+            setIsLoading(true);
+            const { data: { opponentID: myID, issuedXXSecondsAgo = 0 } } = await fetchApi.get({ url: `/user-game/${opponentID}/request` });
+            startCount(issuedXXSecondsAgo);
             const { data } = await fetchApi.get({ url: `/users/${opponentID}/user-info/` })
             setFriendInfo(data)
         } catch (error) {
-            
+            if (error.response) {
+                const { status } = error.response || 500;
+                if(status === 404){
+                    declineGame(opponentID)
+                }
+            }
+
         } finally {
             setIsLoading(false)
         }
@@ -71,21 +97,25 @@ const FriendRequestingItem = ({ opponentID, joinGame, message = '' }) => {
     }, [])
 
     if (isLoading || !friendInfo) {
-        
-        return (<li><Skeleton width="100%" height="160px" /></li>)
+
+        return (<li><Skeleton width="100%" height="70px" /></li>)
     }
 
     return (
         <li>
-            <div style={{ display: "flex", alignItems: 'center' }}>
+            <div className={styles.user_container}>
                 <span className={styles.avatar}>
                     <img src={friendInfo.picture || `/icon/default.webp`} />
                 </span>
-                <p>  {friendInfo.userName} </p>
+                <p >
+                    {friendInfo.userName}
+                    <span className={styles.small}> #{friendInfo.tagID}</span>
+                </p>
             </div>
-            <p>{message ? message : 'is Requesting you to join a game'}</p>
+            <p>Requesting you to join a game<span className={styles.small}> ({display})</span></p>
             <div>
-                <button onClick={joinGame} className={styles.secondary}>accept</button>
+                <button onClick={joinGame} className={styles.secondary}>Accept</button>
+                <button onClick={declineGame} style={{ color: 'var(--purple)' }}>Decline</button>
             </div>
         </li>
     )
