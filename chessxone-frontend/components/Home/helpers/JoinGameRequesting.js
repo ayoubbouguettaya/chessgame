@@ -26,6 +26,12 @@ const JoinGameRequesting = () => {
         try {
             await fetchApi.put({ url: `/user-game/${userID}/accept`, data: { userID: opponentID } });
         } catch (error) {
+            if (error.response) {
+                const { status } = error.response || 500;
+                if(status === 403){
+                    declineGame(opponentID)
+                }
+            }
             throw new Error('join game failed')
         } finally {
             return;
@@ -86,7 +92,6 @@ const FriendRequestingItem = ({ opponentID, joinGame, declineGame }) => {
                     declineGame(opponentID)
                 }
             }
-
         } finally {
             setIsLoading(false)
         }
