@@ -13,4 +13,6 @@ router.get('/:userID/invitations',auth,userGameController.getUserGameInvitation)
 router.put('/:userID/request',auth,checkUserId,userGameController.requestGame)
 router.put('/:userID/accept',auth,checkUserId,userGameController.acceptGame)
 
+router.put('/:userID/decline',auth,checkUserId,userGameController.declineGame)
+
 module.exports = router;

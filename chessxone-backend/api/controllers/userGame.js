@@ -4,6 +4,9 @@ const GameSocketController = require('../../sockets/controllers/game');
 const UserStat = require("../models/stats")
 const eventEmitter = require("../../sockets/eventEmitter");
 
+const UserGameRequestOnRedis = require("../../redisAccess/userGameRequest");
+const UserGamesInvitationsOnRedis = require("../../redisAccess/userGamesInvitation");
+
 exports.getUserGameRequest = async (req, res, next) => {
     try {
         const { userID } = req.params;
@@ -13,7 +16,11 @@ exports.getUserGameRequest = async (req, res, next) => {
         if (!userGameRequestSet) {
             return res.sendStatus(404);
         }
+        const { issued_at } = userGameRequestSet;
+        const issuedAtInMillSeconds = new Date(issued_at).getTime();
+        const cuurentTimeInMillSeconds = new Date().getTime();
 
+        userGameRequestSet.issuedXXSecondsAgo = Math.floor((cuurentTimeInMillSeconds - issuedAtInMillSeconds) / 1000);
         return res.status(200).send(userGameRequestSet)
     } catch (error) {
         return next(error);
@@ -85,6 +92,22 @@ exports.acceptGame = async (req, res, next) => {
         return res.sendStatus(200);
     } catch (error) {
         console.log('joingame_error', error)
+        return next(error)
+    }
+}
+
+exports.declineGame = async (req, res, next) => {
+    try {
+        const { userID } = req.params;
+        const { userID: opponentID } = req.body;
+       
+        await UserGameRequestOnRedis.clear(opponentID)
+        await UserGamesInvitationsOnRedis.pull(userID, opponentID)
+
+        await eventEmitter.nofityHosterGameDeclined(opponentID,userID)
+        return res.sendStatus(200);
+
+    } catch (error) {
         return next(error)
     }
 }
