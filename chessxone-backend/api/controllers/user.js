@@ -8,6 +8,8 @@ const gameSocketController = require('../../sockets/controllers/game')
 const eventEmitter = require('../../sockets/eventEmitter');
 const redisCommand = require('../../utils/redisCommand');
 
+const UserOnRedis = require('../../redisAccess/user')
+
 exports.getOne = async (req, res, next) => {
     try {
         const { userPayload: { uid: firebaseId } } = req;
@@ -206,15 +208,20 @@ exports.getUserInfo = async (req, res, next) => {
     try {
         const { userID } = req.params;
 
-        const user = await User.findById(userID, 'userName tagID _id picture')
+        const userInfoInCache = await UserOnRedis.get(userID)
 
-        if (!user) {
-            res.sendStatus(404);
+        if (!userInfoInCache) {
+            const user = await User.findById(userID, 'userName tagID _id picture')
+
+            if (!user) {
+                res.sendStatus(404);
+                return;
+            }
+            res.status(200).send(user);
             return;
         }
 
-        res.status(200).send(user);
-        return;
+        return res.status(200).send(userInfoInCache);
     } catch (error) {
         return res.sendStatus(500);
     }
@@ -295,7 +302,7 @@ exports.getFeed = async (req, res, next) => {
         let connections = [];
         if (userInfo) { connections = userInfo.connections; }
         const lastConnectedUsers = await redisCommand.srandmember('LAST_CONNECTED_USERS', 20)
-        res.send({ lastConnectedUsers, connections })
+        res.send(lastConnectedUsers)
         return;
     } catch (error) {
         return next(error)
