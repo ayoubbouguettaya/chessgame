@@ -2,9 +2,7 @@ import React, { useState, useEffect } from 'react'
 
 /* the count is on Seconds*/
 const useCounterDisplay = (ttlInMin = 10) => {
-    const [initialeCount, setInitialeCount] = useState(-1);
-    const [count, setCount] = useState(-1);
-
+    const [count, setCount] = useState(-200);
     const [display, SetDisplay] = useState('')
 
     useEffect(() => {
@@ -14,27 +12,30 @@ const useCounterDisplay = (ttlInMin = 10) => {
             SetDisplay(`${Math.floor(count / 60)}min`)
         }
 
-        if(Math.floor(count / 60) > ttlInMin){
+        if (Math.floor(count / 60) > ttlInMin) {
             SetDisplay('Expired');
+        }
+
+        if (count < 0) {
+            SetDisplay('---');
         }
     }, [count]);
 
     useEffect(() => {
         let interval;
-        if (initialeCount !== -1) {
-            setCount(initialeCount);
-          interval =  setInterval(() => {
-                setCount(prevCount => prevCount + 1)
-            }, 1000)
-        }
+        interval = setInterval(() => {
+            setCount(prevCount => prevCount + 1)
+        }, 1000);
+
         return () => clearInterval(interval)
-    }, [initialeCount])
+    }, []);
 
-const startCount = (initialCountParms) => {
-    setInitialeCount(Number.parseInt(initialCountParms))
-}
 
-return { count, display, startCount };
+    const startCount = (initialCountParms) => {
+        setCount(Number.parseInt(initialCountParms))
+    };
+
+    return { count, display, startCount };
 }
 
 export default useCounterDisplay
