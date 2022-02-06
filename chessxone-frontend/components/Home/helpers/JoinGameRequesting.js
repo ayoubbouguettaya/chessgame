@@ -28,8 +28,8 @@ const JoinGameRequesting = () => {
         } catch (error) {
             if (error.response) {
                 const { status } = error.response || 500;
-                if(status === 403){
-                    declineGame(opponentID)
+                if (status === 403) {
+                    await declineGame(opponentID)
                 }
             }
             throw new Error('join game failed')
@@ -77,6 +77,21 @@ const FriendRequestingItem = ({ opponentID, joinGame, declineGame }) => {
     const [isLoading, setIsLoading] = useState(false);
     const { count, display, startCount } = useCounterDisplay(10);
 
+    const [isJoinLoading, setIsJoinLoading] = useState(false);
+    const [isDeclineLoading, setIsDeclineLoading] = useState(false)
+
+    const handleJoinGame = async () => {
+        setIsJoinLoading(true)
+        await joinGame()
+        setIsJoinLoading(false)
+    }
+
+    const handleDeclineGame = async () => {
+        setIsDeclineLoading(true)
+        await declineGame(); 
+        setIsDeclineLoading(false)
+    }
+
 
     const getFriendInfo = async () => {
         try {
@@ -88,7 +103,7 @@ const FriendRequestingItem = ({ opponentID, joinGame, declineGame }) => {
         } catch (error) {
             if (error.response) {
                 const { status } = error.response || 500;
-                if(status === 404){
+                if (status === 404) {
                     declineGame(opponentID)
                 }
             }
@@ -119,8 +134,19 @@ const FriendRequestingItem = ({ opponentID, joinGame, declineGame }) => {
             </div>
             <p>Requesting you to join a game<span className={styles.small}> ({display})</span></p>
             <div>
-                <button onClick={joinGame} className={styles.secondary}>Accept</button>
-                <button onClick={declineGame} style={{ color: 'var(--purple)' }}>Decline</button>
+                <button
+                    disabled={isDeclineLoading || isJoinLoading}
+                    onClick={handleJoinGame}
+                    className={styles.secondary}>
+                    Accept
+                    {isJoinLoading && <img src="/icon/loader.svg" height="15" width="15" />}
+                </button>
+                <button
+                    disabled={isDeclineLoading || isJoinLoading}
+                    onClick={handleDeclineGame}
+                    style={{ color: 'var(--purple)' }}>
+                    {isDeclineLoading ? <img src="/icon/loader.svg" height="15" width="15" /> : 'Decline'}
+                </button>
             </div>
         </li>
     )
