@@ -1,16 +1,14 @@
 const User = require('../models/user');
 const Game = require('../models/game')
+const UserOnRedis = require('../../redisAccess/user');
+const GameOnRedis = require('../../redisAccess/game');
+
+const { notify } = require("../notify");
+
+const redisCommand = require('../../utils/redisCommand');
 const { generateNewTagID } = require('../../utils');
 
-const userSocketController = require('../../sockets/controllers/user')
-const gameSocketController = require('../../sockets/controllers/game')
-
-const eventEmitter = require('../../sockets/eventEmitter');
-const redisCommand = require('../../utils/redisCommand');
-
-const UserOnRedis = require('../../redisAccess/user')
-
-exports.getOne = async (req, res, next) => {
+exports.getCurrent = async (req, res, next) => {
     try {
         const { userPayload: { uid: firebaseId } } = req;
         const user = await User.findOne({ firebaseId });
@@ -25,6 +23,45 @@ exports.getOne = async (req, res, next) => {
     }
 };
 
+exports.getOne = async (req, res, next) => {
+    try {
+        const { userID } = req.params;
+
+        const userInfoInCache = await UserOnRedis.get(userID)
+
+        if (!userInfoInCache) {
+            const user = await User.findById(userID, 'userName tagID _id picture').lean();
+
+            if (!user) {
+                res.sendStatus(404);
+                return;
+            }
+            res.status(200).send(user);
+            return;
+        }
+
+        return res.status(200).send(userInfoInCache);
+    } catch (error) {
+        return res.sendStatus(500);
+    }
+};
+
+exports.getByTagID = async (req, res, next) => {
+    try {
+
+        const { tagID } = req.params;
+
+        const userFound = await User.findOne({ tagID }, 'userName bio picture _id').lean();
+        if (!userFound) {
+            return res.sendStatus(404)
+        }
+
+        return res.status(200).send(userFound)
+    } catch (error) {
+        return next(error)
+    }
+}
+
 exports.add = async (req, res, next) => {
     try {
         const { uid: firebaseId, email, picture, firebase: { sign_in_provider: provider } } = req.userPayload;
@@ -37,7 +74,7 @@ exports.add = async (req, res, next) => {
             return res.status(403).send("user Already existe")
         }
         const tagID = await generateNewTagID();
-        console.log(tagID)
+
         const newUser = await User.create({
             ...userPayload,
             email,
@@ -108,9 +145,8 @@ exports.addConnectionRequest = async (req, res, next) => {
         await friend.save();
 
         /* Notify Friend */
-
         const { _id, userName, tagID, picture } = user;
-        await eventEmitter.emitNewConnectionRequest(friendID, { _id, userName, tagID, picture })
+        await notify.newConnectionRequest(friendID, { _id, userName, tagID, picture })
 
         return res.sendStatus(200);
 
@@ -153,13 +189,8 @@ exports.approveConnectionRequest = async (req, res, next) => {
         await user.save();
         await friend.save();
 
-        /* notify both players*/
-
-        const friendInfo = await userSocketController.getData(friendID)
-        const userInfo = await userSocketController.getData(userID);
-
-        await eventEmitter.emitNewFriend(userID, friendInfo)
-        await eventEmitter.emitNewFriend(friendID, userInfo);
+        await notify.newConnection(userID, friend)
+        await notify.newConnection(friendID, user)
 
         return res.sendStatus(200);
     } catch (error) {
@@ -167,7 +198,7 @@ exports.approveConnectionRequest = async (req, res, next) => {
     }
 }
 
-exports.getAllRequests = async (req, res, next) => {
+exports.getAllConnectionRequests = async (req, res, next) => {
     try {
         const { userID } = req.params;
 
@@ -185,70 +216,30 @@ exports.getAllRequests = async (req, res, next) => {
     }
 }
 
-exports.getFriendInfo = async (req, res, next) => {
-    try {
-        const { userID, friendID } = req.params;
-
-        const user = await User.findById(userID)
-        const friend = await User.findById(friendID, 'userName tagID _id picture')
-
-        if (!user || !friend || !user.connections.includes(friendID)) {
-            res.sendStatus(404);
-            return;
-        }
-
-        res.status(200).send(friend);
-        return;
-    } catch (error) {
-        return res.sendStatus(500);
-    }
-};
-
-exports.getUserInfo = async (req, res, next) => {
+exports.getOnlineConnections = async (req, res, next) => {
     try {
         const { userID } = req.params;
+        const user = await User.findById(userID, 'connections').lean();
 
-        const userInfoInCache = await UserOnRedis.get(userID)
+        const { connections } = user;
+        const onlineConnections = [];
 
-        if (!userInfoInCache) {
-            const user = await User.findById(userID, 'userName tagID _id picture')
-
-            if (!user) {
-                res.sendStatus(404);
-                return;
+        for (let connectionID of connections) {
+            const connection = await UserOnRedis.get(connectionID.toString())
+            if (connection && connection.isConnected) {
+                onlineConnections.push({
+                    _id: connection._id,
+                    userName: connection.userName,
+                    tagID: connection.tagID,
+                    picture: connection.picture,
+                    isConnected: connection.isConnected,
+                    isLocked: connection.isLocked,
+                    isPlaying: connection.isPlaying,
+                })
             }
-            res.status(200).send(user);
-            return;
         }
 
-        return res.status(200).send(userInfoInCache);
-    } catch (error) {
-        return res.sendStatus(500);
-    }
-};
-
-exports.getByTagID = async (req, res, next) => {
-    try {
-
-        const { tagID } = req.params;
-
-        const userFound = await User.findOne({ tagID }, 'userName bio picture _id')
-        if (!userFound) {
-            return res.sendStatus(404)
-        }
-
-        return res.status(200).send(userFound)
-    } catch (error) {
-        return next(error)
-    }
-}
-
-exports.getOnlineFriend = async (req, res, next) => {
-    try {
-        const { userID } = req.params;
-
-        const connectionsInfo = await userSocketController.getConnectedFriends(userID)
-        return res.status(200).send(connectionsInfo);
+        return res.status(200).send(onlineConnections);
     } catch (error) {
         return next(error)
     }
@@ -257,7 +248,8 @@ exports.getOnlineFriend = async (req, res, next) => {
 exports.saveGame = async (req, res, next) => {
     try {
         const { userID, gameID: gameIDParams } = req.params;
-        const gameInfo = await gameSocketController.getGame(gameIDParams)
+
+        const gameInfo = await GameOnRedis.get(gameIDParams);
 
         if (!gameInfo) {
             return res.sendStatus(403);

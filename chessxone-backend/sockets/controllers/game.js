@@ -3,19 +3,6 @@ const { COLOR, KING_SIDE, gameStatus } = require('../../utils/constants');
 
 const switchTurn = (turn) => (turn === COLOR.BLACK ? COLOR.WHITE : COLOR.BLACK);
 
-const createGame = async (hosterID, guestID) => {
-    try {
-        const turn = COLOR.WHITE;
-        const whitePlayerID = hosterID;
-        const blackPlayerID = guestID;
-        const status = gameStatus.loading;
-        return await GameOnRedis.set(hosterID, guestID, { 
-            turn, whitePlayerID, blackPlayerID, status,hosterWin : '0',guestWin : '0',count: '1' });
-    } catch (error) {
-        return error;
-    }
-}
-
 const rematchGame = async (gameID) => {
     try {
         const theGame = await GameOnRedis.get(gameID)
@@ -157,7 +144,6 @@ const clearPlayerAskingRematch = async (gameID) => {
 }
 
 module.exports = {
-    createGame,
     rematchGame,
     getGame,
     getOpponentID,
