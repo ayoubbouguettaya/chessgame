@@ -1,13 +1,12 @@
 const io = require('../config/socketIO-instance');
 
-/*  General Events */
-
+/*  notify All connected Friends */
 const nofityAllconnectedFriends = async (connectedFriends, userData, event = 'friend_changed_status') => {
     try {
         for (let i = 0; i < connectedFriends.length; i++) {
             const friendID = connectedFriends[i]._id.toString();
             if (event = 'friend_changed_status') {
-                await emitFriendChangedStatus(friendID, userData)
+                        await io.to(friendID).emit("friend_changed_status", userData);
             }
         }
 
@@ -17,94 +16,14 @@ const nofityAllconnectedFriends = async (connectedFriends, userData, event = 'fr
     }
 }
 
-const notifyallUserRequestGameCancled = async (friendsRequestGame, userID) => {
+const emitSession = async (userID) => {
     try {
-        for (let i = 0; i < friendsRequestGame.length; i++) {
-            const friendID = friendsRequestGame[i]._id;
-            await emitRequestGameCancled(friendID, userID)
-        }
-
+        await io.to(userID).emit("session", {  });
         return;
     } catch (error) {
         return error;
     }
 }
-
-const nofityHosterGameDeclined = async (hosterID, guestID) => {
-    try {
-        await io.to(hosterID).emit("request_game_declined", { guestID });
-    } catch (error) {
-        return error;
-    }
-}
-
-const emitSession = async (userID, connectedFriends, gameID) => {
-    try {
-        await io.to(userID).emit("session", { connectedFriends, gameID });
-        return;
-    } catch (error) {
-        return error;
-    }
-}
-
-const emitFriendChangedStatus = async (friendID, userData) => {
-    try {
-        await io.to(friendID).emit("friend_changed_status", userData);
-        return;
-    } catch (error) {
-        return error;
-    }
-}
-
-const emitNewFriend = async (userID, friendInfo) => {
-    try {
-        /* Approve */
-        await io.to(userID).emit("add_new_friend", friendInfo);
-
-        return;
-    } catch (error) {
-        return error;
-    }
-}
-
-const emitNewConnectionRequest = async (userID, connectionRequestInfo) => {
-    try {
-        await io.to(userID).emit("add_new_connection_request", connectionRequestInfo);
-
-        return;
-    } catch (error) {
-        return error;
-    }
-}
-
-const emitNewGameInvitation = async (userID, opponentID) => {
-    try {
-        await io.to(userID).emit("add_new_user_game_invitation", { _id: opponentID });
-        return;
-    } catch (error) {
-        return error;
-    }
-}
-
-const emitNewGame = async (userID, gameInfo) => {
-    try {
-        await io.to(userID).emit("new_game_ready", gameInfo);
-        return;
-    } catch (error) {
-        return error;
-    }
-}
-
-const emitRequestGameCancled = async (friendID, userID) => {
-    try {
-        await io.to(friendID).emit("request_game_cancled", { _id: userID });
-
-        return;
-    } catch (error) {
-        return error;
-    }
-}
-
 // Game Emitters 
 const emitGameStart = async (userID, gameInfo) => {
     try {
@@ -167,17 +86,9 @@ const emitGameEnd = async (userID, { winner, endedBy }) => {
     }
 }
 
-
 module.exports = {
-    nofityHosterGameDeclined,
     nofityAllconnectedFriends,
     emitSession,
-    emitFriendChangedStatus,
-    emitNewFriend,
-    emitNewConnectionRequest,
-    notifyallUserRequestGameCancled,
-    emitNewGameInvitation,
-    emitNewGame,
 
     emitAskRematch,
     emitGameStart,
