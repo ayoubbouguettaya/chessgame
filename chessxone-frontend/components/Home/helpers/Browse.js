@@ -87,7 +87,7 @@ const ConnectionItem = ({ userID, isFriend, handleRequestGame, handleRequestGame
     const getuserInfo = async () => {
         try {
             setIsLoading(true)
-            const { data } = await fetchApi.get({ url: `/users/${userID}/user-info` })
+            const { data } = await fetchApi.get({ url: `/users/${userID}/` })
             setuserInfo(data)
         } catch (error) {
         } finally {

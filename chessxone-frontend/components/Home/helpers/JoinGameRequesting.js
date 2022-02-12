@@ -98,7 +98,7 @@ const FriendRequestingItem = ({ opponentID, joinGame, declineGame }) => {
             setIsLoading(true);
             const { data: { opponentID: myID, issuedXXSecondsAgo = 0 } } = await fetchApi.get({ url: `/user-game/${opponentID}/request` });
             startCount(issuedXXSecondsAgo);
-            const { data } = await fetchApi.get({ url: `/users/${opponentID}/user-info/` })
+            const { data } = await fetchApi.get({ url: `/users/${opponentID}` })
             setFriendInfo(data)
         } catch (error) {
             if (error.response) {
