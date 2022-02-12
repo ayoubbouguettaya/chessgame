@@ -4,7 +4,7 @@ const generate_userID_Key = (userID) => (`USER_ID_${userID}`);
 
 const set = async (userID, data) => {
     try {
-        await redisCommand.hmSet(generate_userID_Key(userID), data,{days: 1})
+        await redisCommand.hmSet(generate_userID_Key(userID), data, { days: 1 })
     } catch (error) {
         return (error)
     }
@@ -42,33 +42,6 @@ const setIsConnected = async (userID, isConnected) => {
     }
 }
 
-const getOnlyConnectedUsersData = async (connctionsIDSet) => {
-    try {
-        const connectionsInfo = [];
-
-        for (let i = 0; i < connctionsIDSet.length; i++) {
-            const connectionID = connctionsIDSet[i].toString();
-            const friendInfo = await redisCommand.hGetAll(generate_userID_Key(connectionID))
-            
-            if (friendInfo && friendInfo.isConnected) {
-                connectionsInfo.push({
-                    _id: friendInfo._id,
-                    userName: friendInfo.userName,
-                    tagID: friendInfo.tagID,
-                    picture: friendInfo.picture,
-                    isConnected: friendInfo.isConnected,
-                    isLocked: friendInfo.isLocked,
-                    isPlaying: friendInfo.isPlaying,
-                });
-            }
-        }
-
-        return connectionsInfo;
-    } catch (error) {
-
-    }
-}
-
 const setGame = async (userID, gameInfo) => {
     try {
         const { gameID } = gameInfo;
@@ -78,9 +51,9 @@ const setGame = async (userID, gameInfo) => {
     }
 }
 
-const removeGameID = async (userID) =>{
+const removeGameID = async (userID) => {
     try {
-        await redisCommand.hDel(generate_userID_Key(userID),'gameID' )
+        await redisCommand.hDel(generate_userID_Key(userID), 'gameID')
     } catch (error) {
         return (error)
     }
@@ -92,7 +65,6 @@ module.exports = {
     setIsLocked,
     setIsPlaying,
     setIsConnected,
-    getOnlyConnectedUsersData,
     setGame,
     removeGameID
 }
