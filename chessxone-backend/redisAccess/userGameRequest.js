@@ -11,11 +11,11 @@ const get = async (userID) => {
     }
 }
 
-const set = async (userID, opponentID) => {
+const set = async (hosterID, guestID) => {
     try {
         await redisCommand.hmSet(
-            generate_UserGameRequest_Key(userID),
-            { opponentID, issued_at: new Date() },
+            generate_UserGameRequest_Key(hosterID),
+            { opponentID: guestID, issued_at: new Date() },
             { min: 10 });
 
         return;
