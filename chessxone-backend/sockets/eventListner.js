@@ -1,22 +1,22 @@
+const io = require('../config/socketIO-instance');
+
 const userController = require('./controllers/user');
 const gameController = require('./controllers/game');
 const eventEmitter = require('./eventEmitter');
+
 const { COLOR, endedBy, gameStatus } = require('../utils/constants');
-const io = require('../config/socketIO-instance');
-const redisCommand = require('../utils/redisCommand');
 
 const onConnexion = async (socket) => {
     try {
         await socket.join(socket.userID);
 
-        socket.userData = await userController.connectAndgetUserData(socket.userID)
+        socket.userData = await userController.connect(socket.userID)
+        const connectedFriends = await userController.getOnlineConnections(socket.userID);
 
-        const connectedFriends = await userController.getConnectedFriends(socket.userID)
-        const gameID = socket.userData.gameID || ''
-        await redisCommand.sadd('LAST_CONNECTED_USERS',socket.userID)
-
-        await eventEmitter.emitSession(socket.userID, connectedFriends, gameID);
+        
         await eventEmitter.nofityAllconnectedFriends(connectedFriends, socket.userData);
+        await eventEmitter.emitSession(socket.userID);
+
         return;
     } catch (error) {
         return error;
@@ -27,16 +27,18 @@ const onDisconnect = async (socket) => {
     socket.on("disconnect", async () => {
         const socketsInUserIDRoom = await io.in(socket.userID).allSockets();
         if (socketsInUserIDRoom.size === 0) {
-            await redisCommand.srem('LAST_CONNECTED_USERS',socket.userID)
-
             await userController.disconnect(socket.userID)
 
-            const connectedFriends = await userController.getConnectedFriends(socket.userID)
+            const connectedFriends = await userController.getOnlineConnections(socket.userID)
 
             await eventEmitter.nofityAllconnectedFriends(connectedFriends, { _id: socket.userID, isConnected: false });
-            const currentGameID = await userController.getGameID(socket.userID)
 
-            await handleGameEnd(socket, { gameID: currentGameID, endedBy: endedBy.TIME_OUT })
+            const currentGameID = socket.userData.gameID || '';
+
+            if (currentGameID) {
+                await handleGameEnd(socket, { gameID: currentGameID, endedBy: endedBy.TIME_OUT })
+            }
+
         }
     });
 }
@@ -55,8 +57,8 @@ const onJoinGame = (socket) => {
             eventEmitter.emitGameNotAvailable(whitePlayerID)
             return;
         }
-        const { userName: blackUserName } = await userController.getData(blackPlayerID)
-        const { userName: whiteUserName } = await userController.getData(whitePlayerID)
+        const { userName: blackUserName } = await userController.get(blackPlayerID)
+        const { userName: whiteUserName } = await userController.get(whitePlayerID)
         const playerColor = (userID === blackPlayerID) ? COLOR.BLACK : COLOR.WHITE;
 
         const gameInfo = { gameID, blackUserName, whiteUserName, playerColor, turn };
@@ -99,8 +101,8 @@ const onAcceptRematch = (socket) => {
         await userController.joinGame(guestID)
         await userController.joinGame(hosterID)
 
-        const { userName: blackUserName } = await userController.getData(blackPlayerID)
-        const { userName: whiteUserName } = await userController.getData(whitePlayerID)
+        const { userName: blackUserName } = await userController.get(blackPlayerID)
+        const { userName: whiteUserName } = await userController.get(whitePlayerID)
 
         await eventEmitter.emitGameStart(blackPlayerID, { gameID, blackUserName, turn, whiteUserName, playerColor: COLOR.BLACK, hosterWin, guestWin });
         await eventEmitter.emitGameStart(whitePlayerID, { gameID, blackUserName, turn, whiteUserName, playerColor: COLOR.WHITE, hosterWin, guestWin });
@@ -206,7 +208,7 @@ const handleGameEnd = async (socket, { gameID, endedBy: endedByParams }, withNot
 
     let winner = socket.userID === whitePlayerID ? COLOR.BLACK : COLOR.WHITE;
 
-    if (endedByParams === endedBy.STEAL_MATE || endedByParams === endedBy.DRAW  ){
+    if (endedByParams === endedBy.STEAL_MATE || endedByParams === endedBy.DRAW) {
         winner = ''
     }
     await gameController.endGame(gameID, { winner, endedBy: endedByParams })
@@ -217,11 +219,11 @@ const handleGameEnd = async (socket, { gameID, endedBy: endedByParams }, withNot
     await eventEmitter.emitGameEnd(blackPlayerID, { endedBy: endedByParams, winner })
 
     if (withNotify) {
-        const blackInfo = await userController.getData(blackPlayerID)
-        const whiteInfo = await userController.getData(whitePlayerID);
+        const blackInfo = await userController.get(blackPlayerID)
+        const whiteInfo = await userController.get(whitePlayerID);
 
-        const BlackconnectedFriends = await userController.getConnectedFriends(blackPlayerID)
-        const whiteconnectedFriends = await userController.getConnectedFriends(whitePlayerID)
+        const BlackconnectedFriends = await userController.getOnlineConnections(blackPlayerID)
+        const whiteconnectedFriends = await userController.getOnlineConnections(whitePlayerID)
 
         await eventEmitter.nofityAllconnectedFriends(BlackconnectedFriends, blackInfo);
         await eventEmitter.nofityAllconnectedFriends(whiteconnectedFriends, whiteInfo);
