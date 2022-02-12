@@ -12,6 +12,6 @@ router.get('/', async (req, res, next) => {
 
 router.use('/auth',AuthRouter);
 router.use('/users', UsersRouter);
-router.use('/user-game',UserGameRouter)
+router.use('/match',UserGameRouter)
 
 module.exports = router;

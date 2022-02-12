@@ -14,7 +14,7 @@ const WaitingOpponent = () => {
 
     const getUserGameRequest = async () => {
         try {
-            const { data: { opponentID, issuedXXSecondsAgo = 0 } } = await fetchApi.get({ url: `/user-game/${userID}/request` });
+            const { data: { opponentID, issuedXXSecondsAgo = 0 } } = await fetchApi.get({ url: `/match/${userID}/request` });
             startCount(issuedXXSecondsAgo)
             if (opponentID) {
                 const { data } = await fetchApi.get({ url: `/users/${opponentID}` });

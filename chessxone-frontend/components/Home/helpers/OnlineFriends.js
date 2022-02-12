@@ -76,7 +76,7 @@ const FriendStatus = ({ handleInviteFriendSuccess, userID, friendID, isPlaying, 
     const handleInviteFriend = async (friendID) => {
         try {
             setIsLoading(true)
-            await apiFetch.put({ url: `/user-game/${userID}/request`, data: { userID: friendID } });
+            await apiFetch.put({ url: `/match/${userID}/request`, data: { userID: friendID } });
             handleInviteFriendSuccess()
         } catch (error) {
 

@@ -38,7 +38,7 @@ const Browse = ({ userID }) => {
 
     const handleRequestGame = async (playerID) => {
         try {
-            await fetchApi.put({ url: `/user-game/${userID}/request`, data: { userID: playerID } });
+            await fetchApi.put({ url: `/match/${userID}/request`, data: { userID: playerID } });
             setSuggestedUsersId(suggestedUsersId.filter((suggestedplayerID) => suggestedplayerID !== playerID))
         } catch (error) {
             throw new Error('request game failed')
