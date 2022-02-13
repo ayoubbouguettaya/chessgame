@@ -13,7 +13,7 @@ const JoinGameRequesting = () => {
 
     const getUserGameInvitations = async () => {
         try {
-            const { data } = await fetchApi.get({ url: `/match/${userID}/invitations` })
+            const { data } = await fetchApi.get({ url: `/matchs/${userID}/incoming` })
             dispatch({ type: SET_USER_GAME_INVITATIONS, payload: { userGameInvitations: data } })
         } catch (error) {
             throw new Error('get games invitations failed')
@@ -24,7 +24,7 @@ const JoinGameRequesting = () => {
 
     const joinGame = async (opponentID) => {
         try {
-            await fetchApi.put({ url: `/match/${userID}/accept`, data: { userID: opponentID } });
+            await fetchApi.put({ url: `/matchs/${userID}/accept`, data: { userID: opponentID } });
         } catch (error) {
             if (error.response) {
                 const { status } = error.response || 500;
@@ -40,7 +40,7 @@ const JoinGameRequesting = () => {
 
     const declineGame = async (opponentID) => {
         try {
-            await fetchApi.put({ url: `/match/${userID}/decline`, data: { userID: opponentID } });
+            await fetchApi.put({ url: `/matchs/${userID}/decline`, data: { userID: opponentID } });
             dispatch({ type: REMOVE_USER_GAME_INVITATION, payload: { _id: opponentID } })
         } catch (error) {
             throw new Error('decline game failed')
@@ -96,7 +96,7 @@ const FriendRequestingItem = ({ opponentID, joinGame, declineGame }) => {
     const getFriendInfo = async () => {
         try {
             setIsLoading(true);
-            const { data: { opponentID: myID, issuedXXSecondsAgo = 0 } } = await fetchApi.get({ url: `/match/${opponentID}/request` });
+            const { data: { opponentID: myID, issuedXXSecondsAgo = 0 } } = await fetchApi.get({ url: `/matchs/${opponentID}/outgoing` });
             startCount(issuedXXSecondsAgo);
             const { data } = await fetchApi.get({ url: `/users/${opponentID}` })
             setFriendInfo(data)

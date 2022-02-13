@@ -66,7 +66,7 @@ const GameComponent = () => {
 
     const handleSaveGame = async () => {
         try {
-            await fetchApi.put({url: `/users/${userID}/games/${gameID}`})
+            await fetchApi.put({url: `/saved-games/${gameID}/personal/${userID}`})
         } catch (error) {
 
         }
