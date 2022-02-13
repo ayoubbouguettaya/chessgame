@@ -29,4 +29,4 @@ const gameSchema = new Schema({
     }]
 });
 
-module.exports = model('Game', gameSchema);
+module.exports = model('SavedGame', gameSchema);
