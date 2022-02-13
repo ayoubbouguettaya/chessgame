@@ -1,11 +1,11 @@
-const GameOnRedis = require('../../redisAccess/game');
+const GameOnHotAccess = require('../../hotAccess/game');
 const { COLOR, KING_SIDE, gameStatus } = require('../../utils/constants');
 
 const switchTurn = (turn) => (turn === COLOR.BLACK ? COLOR.WHITE : COLOR.BLACK);
 
 const rematchGame = async (gameID) => {
     try {
-        const theGame = await GameOnRedis.get(gameID)
+        const theGame = await GameOnHotAccess.get(gameID)
 
         const { whitePlayerID,
             blackPlayerID,
@@ -52,7 +52,7 @@ const rematchGame = async (gameID) => {
             count: Number.parseInt(count) + 1
         }
 
-        await GameOnRedis.edit(gameID,newGameInfo);
+        await GameOnHotAccess.edit(gameID,newGameInfo);
         return newGameInfo; 
     } catch (error) {
         return error;
@@ -61,14 +61,14 @@ const rematchGame = async (gameID) => {
 
 const getGame = async (gameID) => {
     try {
-        return await GameOnRedis.get(gameID)
+        return await GameOnHotAccess.get(gameID)
     } catch (error) {
         return error;
     }
 }
 
 const getOpponentID = async (gameID, userID) => {
-    const { hosterID, guestID } = await GameOnRedis.get(gameID);
+    const { hosterID, guestID } = await GameOnHotAccess.get(gameID);
     if (userID === hosterID) {
         return guestID
     }
@@ -79,7 +79,7 @@ const getOpponentID = async (gameID, userID) => {
 }
 
 const isPlayerTurn = async (gameID, userID) => {
-    const { blackPlayerID, whitePlayerID, turn } = await GameOnRedis.get(gameID);
+    const { blackPlayerID, whitePlayerID, turn } = await GameOnHotAccess.get(gameID);
     /*black turn and the player is black or is the white turn and the player is the white p */
     if ((turn === COLOR.BLACK && userID === blackPlayerID) || (turn === COLOR.WHITE && userID === whitePlayerID)) {
         return true;
@@ -88,47 +88,47 @@ const isPlayerTurn = async (gameID, userID) => {
 }
 
 const makeMove = async (gameID, { from, to }) => {
-    const theGame = await GameOnRedis.get(gameID);
+    const theGame = await GameOnHotAccess.get(gameID);
     const { turn, moves = ' ' } = theGame;
     const newTurn = switchTurn(turn);
     const newMoves = `${moves} | ${from}-${to}`;
 
-    await GameOnRedis.edit(gameID, { turn: newTurn, moves: newMoves ,status: gameStatus.running})
+    await GameOnHotAccess.edit(gameID, { turn: newTurn, moves: newMoves ,status: gameStatus.running})
     return true;
 }
 
 const makeCastleMove = async (gameID, side) => {
-    const theGame = await GameOnRedis.get(gameID);
+    const theGame = await GameOnHotAccess.get(gameID);
     const { turn, moves } = theGame;
     const newTurn = switchTurn(turn);
     const newMoves = `${moves} | ${side === KING_SIDE ? '0-0-0' : '0-0'}`;
 
-    await GameOnRedis.edit(gameID, { turn: newTurn, moves: newMoves })
+    await GameOnHotAccess.edit(gameID, { turn: newTurn, moves: newMoves })
     return true;
 }
 
 const promotePawn = async (gameID, piece) => {
-    const theGame = await GameOnRedis.get(gameID);
+    const theGame = await GameOnHotAccess.get(gameID);
     const { moves } = theGame;
 
     const newMoves = `${moves}=${piece}`;
 
-    await GameOnRedis.edit(gameID, { moves: newMoves })
+    await GameOnHotAccess.edit(gameID, { moves: newMoves })
     return true;
 }
 
 const endGame = async (gameID, info) => {
-    await GameOnRedis.edit(gameID, { ...info, status: gameStatus.ended })
+    await GameOnHotAccess.edit(gameID, { ...info, status: gameStatus.ended })
     return true;
 }
 
 const setPlayerAskingRematch = async (gameID, userID) => {
-    await GameOnRedis.edit(gameID, { playerAskingRequest: userID })
+    await GameOnHotAccess.edit(gameID, { playerAskingRequest: userID })
     return true;
 }
 
 const getPlayerAskingRematch = async (gameID) => {
-    const theGame = await GameOnRedis.get(gameID);
+    const theGame = await GameOnHotAccess.get(gameID);
     if (!theGame || !theGame.playerAskingRequest) {
         return null;
     }
@@ -136,11 +136,11 @@ const getPlayerAskingRematch = async (gameID) => {
 }
 
 const clearPlayerAskingRematch = async (gameID) => {
-    const theGame = await GameOnRedis.get(gameID);
+    const theGame = await GameOnHotAccess.get(gameID);
     if (!theGame || !theGame.playerAskingRequest) {
         return null;
     }
-    return await GameOnRedis.edit(gameID, { playerAskingRequest: '' })
+    return await GameOnHotAccess.edit(gameID, { playerAskingRequest: '' })
 }
 
 module.exports = {

@@ -1,11 +1,11 @@
 const redisCommand = require('../utils/redisCommand');
 const {
-    generate_UserGameInvitation_Key,
+    generate_IncomingMatchRequests_Key,
 } = require('../utils');
 
 const get = async (userID) => {
     try {
-        return await redisCommand.smembers(generate_UserGameInvitation_Key(userID));
+        return await redisCommand.smembers(generate_IncomingMatchRequests_Key(userID));
     } catch (error) {
         return error
     }
@@ -13,7 +13,7 @@ const get = async (userID) => {
 
 const clear = async (userID) => {
     try {
-        await redisCommand.del(generate_UserGameInvitation_Key(userID))
+        await redisCommand.del(generate_IncomingMatchRequests_Key(userID))
     } catch (error) {
 return error;        
     }
@@ -21,7 +21,7 @@ return error;
  
 const push = async (guestID,hosterID) => {
     try {
-     await redisCommand.sadd(generate_UserGameInvitation_Key(guestID), hosterID )
+     await redisCommand.sadd(generate_IncomingMatchRequests_Key(guestID), hosterID )
     } catch (error) {
         return error
     }
@@ -29,7 +29,7 @@ const push = async (guestID,hosterID) => {
 
 const pull = async (guestID,hosterID) => {
     try {
-        await redisCommand.srem(generate_UserGameInvitation_Key(guestID), hosterID)
+        await redisCommand.srem(generate_IncomingMatchRequests_Key(guestID), hosterID)
     } catch (error) {
         return error;
     }

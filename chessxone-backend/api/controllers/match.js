@@ -1,45 +1,45 @@
-const UserStat = require("../models/stats")
-const UserGameRequestOnRedis = require("../../redisAccess/userGameRequest");
-const UserGamesInvitationsOnRedis = require("../../redisAccess/userGamesInvitation");
-const UserOnRedis = require('../../redisAccess/user');
-const GameOnRedis = require('../../redisAccess/game')
+const OutGoingMatchReq = require("../../hotAccess/outGoingMatchReq");
+const InComingMatchReq = require("../../hotAccess/inComingMatchReq");
+const UserOnHotAccess = require('../../hotAccess/user');
+const GameOnHotAccess = require('../../hotAccess/game')
 
+const StatsController = require("../stats/controller");
 const { notify, notifyAll } = require("../notify");
 
 const { gameStatus, COLOR } = require("../../utils/constants");
 
-exports.getUserGameRequest = async (req, res, next) => {
+exports.getOutGoingRequest = async (req, res, next) => {
     try {
         const { userID } = req.params;
 
-        const userGameRequestSet = await UserGameRequestOnRedis.get(userID);
+        const outGoingReqHash = await OutGoingMatchReq.get(userID);
 
-        if (!userGameRequestSet) {
+        if (!outGoingReqHash) {
             return res.sendStatus(404);
         }
-        const { issued_at } = userGameRequestSet;
+        const { issued_at } = outGoingReqHash;
         const issuedAtInMillSeconds = new Date(issued_at).getTime();
         const cuurentTimeInMillSeconds = new Date().getTime();
 
-        userGameRequestSet.issuedXXSecondsAgo = Math.floor((cuurentTimeInMillSeconds - issuedAtInMillSeconds) / 1000);
-        return res.status(200).send(userGameRequestSet)
+        outGoingReqHash.issuedXXSecondsAgo = Math.floor((cuurentTimeInMillSeconds - issuedAtInMillSeconds) / 1000);
+        return res.status(200).send(outGoingReqHash)
     } catch (error) {
         return next(error);
     }
 }
 
-exports.getUserGameInvitation = async (req, res, next) => {
+exports.getInComingRequest = async (req, res, next) => {
     try {
 
         const { userID } = req.params;
 
-        const userGameInvitationSet = await UserGamesInvitationsOnRedis.get(userID);
+        const inComingRequestSet = await InComingMatchReq.get(userID);
 
-        if (!userGameInvitationSet) {
+        if (!inComingRequestSet) {
             return res.sendStatus(404)
         }
 
-        return res.status(200).send(userGameInvitationSet)
+        return res.status(200).send(inComingRequestSet)
     } catch (error) {
         return next(error);
     }
@@ -54,18 +54,18 @@ exports.requestGame = async (req, res, next) => {
             return res.sendStatus(403)
         }
 
-        await UserGameRequestOnRedis.set(userID, opponentID)
+        await OutGoingMatchReq.set(userID, opponentID)
 
-        await UserGamesInvitationsOnRedis.push(opponentID, userID)
-        await UserOnRedis.setIsLocked(userID, true);
+        await InComingMatchReq.push(opponentID, userID)
+        await UserOnHotAccess.setIsLocked(userID, true);
 
-        const playerToNotifyGameCancled = await UserGamesInvitationsOnRedis.get(userID)
+        const playerToNotifyGameCancled = await InComingMatchReq.get(userID)
 
         if (playerToNotifyGameCancled) {
-            UserGamesInvitationsOnRedis.clear(userID)
+            InComingMatchReq.clear(userID)
 
             for (let playerToNotify of playerToNotifyGameCancled) {
-                await UserGameRequestOnRedis.clear(playerToNotify)
+                await OutGoingMatchReq.clear(playerToNotify)
             }
 
             await notifyAll.requestGameCancled(playerToNotifyGameCancled, userID)
@@ -85,20 +85,19 @@ exports.acceptGame = async (req, res, next) => {
         const { userID: opponentID } = req.body;
         /* checking Legebility*/
         if (!await isAllowedToApproveGame(userID, opponentID)) {
-            console.log("\n is not allowed tro appreove rhe game \n")
             return res.sendStatus(403)
         }
         /* Preparing to create the Game*/
-        await UserGameRequestOnRedis.clear(opponentID)
-        await UserOnRedis.setIsLocked(userID, true);
+        await OutGoingMatchReq.clear(opponentID)
+        await UserOnHotAccess.setIsLocked(userID, true);
 
-        const playerToNotifyGameCancled = await UserGamesInvitationsOnRedis.get(userID)
+        const playerToNotifyGameCancled = await InComingMatchReq.get(userID)
 
         if (playerToNotifyGameCancled) {
-            UserGamesInvitationsOnRedis.clear(userID)
+            InComingMatchReq.clear(userID)
 
             for (let playerToNotify of playerToNotifyGameCancled) {
-                await UserGameRequestOnRedis.clear(playerToNotify)
+                await OutGoingMatchReq.clear(playerToNotify)
             }
 
             await notifyAll.requestGameCancled(playerToNotifyGameCancled, userID)
@@ -111,10 +110,9 @@ exports.acceptGame = async (req, res, next) => {
         await notify.newGame(opponentID, gameInfo);
 
         /* Statistics*/
-        await UserStat.findOneAndUpdate({ userID }, { $inc: { gamesCount: 1 } }, { upsert: true })
-        await UserStat.findOneAndUpdate({ userID: opponentID }, { $inc: { gamesCount: 1 } }, { upsert: true })
-        /* -------------------------------------------------------------------*/
-
+        await StatsController.incrementGameCount(userID);
+        await StatsController.incrementGameCount(opponentID);
+        
         return res.sendStatus(200);
     } catch (error) {
         console.log('joingame_error', error)
@@ -127,8 +125,8 @@ exports.declineGame = async (req, res, next) => {
         const { userID } = req.params;
         const { userID: opponentID } = req.body;
 
-        await UserGameRequestOnRedis.clear(opponentID)
-        await UserGamesInvitationsOnRedis.pull(userID, opponentID)
+        await OutGoingMatchReq.clear(opponentID)
+        await InComingMatchReq.pull(userID, opponentID)
 
         await notify.gameRequestDeclined(opponentID, userID)
 
@@ -145,19 +143,19 @@ const isAllowedToRequestGame = async (hosterID, guestID) => {
         if (hosterID === guestID) {
             return false;
         }
-        const userGameInvitationSet = await UserGamesInvitationsOnRedis.get(hosterID)
-        const guestUserGameInvitationSet = await UserGamesInvitationsOnRedis.get(guestID)
+        const hosterIncomingRequestSet = await InComingMatchReq.get(hosterID)
+        const guestIncomingRequestSet = await InComingMatchReq.get(guestID)
 
-        if (guestUserGameInvitationSet.includes(hosterID)) {
+        if (guestIncomingRequestSet.includes(hosterID)) {
             return false
         }
 
-        if (userGameInvitationSet.includes(guestID)) {
+        if (hosterIncomingRequestSet.includes(guestID)) {
             return false
         }
 
-        const userGameRequestInfo = await UserGameRequestOnRedis.get(hosterID);
-        if (userGameRequestInfo) {
+        const hosterOutGoingReqHash = await OutGoingMatchReq.get(hosterID);
+        if (hosterOutGoingReqHash) {
             return false;
         }
 
@@ -169,18 +167,18 @@ const isAllowedToRequestGame = async (hosterID, guestID) => {
 
 const isAllowedToApproveGame = async (guestID, hosterID) => {
     try {
-        const userGameRequestInfo = await UserGameRequestOnRedis.get(hosterID)
-        if (!userGameRequestInfo) {
-            await UserGamesInvitationsOnRedis.pull(guestID, hosterID)
+        const hosterOutGoingReqHash = await OutGoingMatchReq.get(hosterID)
+        if (!hosterOutGoingReqHash) {
+            await InComingMatchReq.pull(guestID, hosterID)
             return false;
         }
 
-        if (userGameRequestInfo.opponentID !== guestID) {
+        if (hosterOutGoingReqHash.opponentID !== guestID) {
             return false;
         }
 
-        const guestGameInvitationsSet = await UserGamesInvitationsOnRedis.get(guestID)
-        if (!guestGameInvitationsSet.includes(hosterID)) {
+        const guestIncomingRequestSet = await InComingMatchReq.get(guestID)
+        if (!guestIncomingRequestSet.includes(hosterID)) {
             return false;
         }
 
@@ -196,17 +194,23 @@ const createGame = async (hosterID, guestID) => {
         const whitePlayerID = hosterID;
         const blackPlayerID = guestID;
         const status = gameStatus.loading;
-        const gameInfo =  await GameOnRedis.set(hosterID, guestID, {
-            turn, whitePlayerID, blackPlayerID, status, hosterWin: '0', guestWin: '0', count: '1'
+        const gameInfo = await GameOnHotAccess.set(hosterID, guestID, {
+            turn,
+            whitePlayerID,
+            blackPlayerID,
+            status,
+            hosterWin: '0',
+            guestWin: '0',
+            count: '1'
         });
-        await UserOnRedis.setGame(hosterID, gameInfo);
-        await UserOnRedis.setGame(guestID, gameInfo);
+        await UserOnHotAccess.setGame(hosterID, gameInfo);
+        await UserOnHotAccess.setGame(guestID, gameInfo);
 
-        await UserOnRedis.setIsLocked(hosterID,true)
-        await UserOnRedis.setIsLocked(guestID,true);
+        await UserOnHotAccess.setIsLocked(hosterID, true)
+        await UserOnHotAccess.setIsLocked(guestID, true);
 
-        await UserOnRedis.setIsPlaying(hosterID,true);
-        await UserOnRedis.setIsPlaying(guestID,true);
+        await UserOnHotAccess.setIsPlaying(hosterID, true);
+        await UserOnHotAccess.setIsPlaying(guestID, true);
 
         return gameInfo;
     } catch (error) {

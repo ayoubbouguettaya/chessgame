@@ -1,5 +1,5 @@
 const User = require('../../api/models/user');
-const UserOnRedis = require('../../redisAccess/user');
+const UserOnHotAccess = require('../../hotAccess/user');
 
 const redisCommand = require('../../utils/redisCommand');
 const { LAST_CONNECTED_USERS } = require('../../utils/redisKeys');
@@ -18,7 +18,7 @@ const connect = async (userID) => {
             lastTimeConnected
         };
 
-        await UserOnRedis.set(userID, dataToStore)
+        await UserOnHotAccess.set(userID, dataToStore)
         await redisCommand.sadd(LAST_CONNECTED_USERS, socket.userID)
 
         return dataToStore;
@@ -31,7 +31,7 @@ const connect = async (userID) => {
 const disconnect = async (userID) => {
     try {
         await redisCommand.srem(LAST_CONNECTED_USERS, socket.userID)
-        return await UserOnRedis.setIsConnected(userID, false)
+        return await UserOnHotAccess.setIsConnected(userID, false)
     } catch (error) {
         return error;
     }
@@ -39,7 +39,7 @@ const disconnect = async (userID) => {
 
 const get = async (userID) => {
     try {
-        const userInfoInCache = await UserOnRedis.get(userID)
+        const userInfoInCache = await UserOnHotAccess.get(userID)
 
         if (!userInfoInCache) {
             return await User.findById(userID, 'userName tagID picture').lean();
@@ -64,7 +64,7 @@ const getOnlineConnections = async (userID) => {
         const onlineConnections = [];
 
         for (let connectionID of connections) {
-            const connection = await UserOnRedis.get(connectionID.toString())
+            const connection = await UserOnHotAccess.get(connectionID.toString())
             if (connection && connection.isConnected) {
                 onlineConnections.push({
                     _id: connection._id,
@@ -86,9 +86,9 @@ const getOnlineConnections = async (userID) => {
 
 const joinGame = async (userID, gameInfo) => {
     try {
-        await UserOnRedis.setGame(userID, gameInfo);
-        await UserOnRedis.setIsLocked(true)
-        await UserOnRedis.setIsPlaying(true)
+        await UserOnHotAccess.setGame(userID, gameInfo);
+        await UserOnHotAccess.setIsLocked(true)
+        await UserOnHotAccess.setIsPlaying(true)
     } catch (error) {
         return error;
     }
@@ -96,9 +96,9 @@ const joinGame = async (userID, gameInfo) => {
 
 const leaveGame = async (userID) => {
     try {
-        await UserOnRedis.setIsLocked(userID, false);
-        await UserOnRedis.setIsPlaying(userID, false);
-        return await UserOnRedis.removeGameID(userID)
+        await UserOnHotAccess.setIsLocked(userID, false);
+        await UserOnHotAccess.setIsPlaying(userID, false);
+        return await UserOnHotAccess.removeGameID(userID)
     } catch (error) {
         return error;
     }
