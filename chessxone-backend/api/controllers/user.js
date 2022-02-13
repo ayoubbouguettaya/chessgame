@@ -1,7 +1,5 @@
 const User = require('../models/user');
-const Game = require('../models/game')
-const UserOnRedis = require('../../redisAccess/user');
-const GameOnRedis = require('../../redisAccess/game');
+const UserOnHotAccess = require('../../hotAccess/user');
 
 const { notify } = require("../notify");
 
@@ -27,7 +25,7 @@ exports.getOne = async (req, res, next) => {
     try {
         const { userID } = req.params;
 
-        const userInfoInCache = await UserOnRedis.get(userID)
+        const userInfoInCache = await UserOnHotAccess.get(userID)
 
         if (!userInfoInCache) {
             const user = await User.findById(userID, 'userName tagID _id picture').lean();
@@ -225,7 +223,7 @@ exports.getOnlineConnections = async (req, res, next) => {
         const onlineConnections = [];
 
         for (let connectionID of connections) {
-            const connection = await UserOnRedis.get(connectionID.toString())
+            const connection = await UserOnHotAccess.get(connectionID.toString())
             if (connection && connection.isConnected) {
                 onlineConnections.push({
                     _id: connection._id,
@@ -242,46 +240,6 @@ exports.getOnlineConnections = async (req, res, next) => {
         return res.status(200).send(onlineConnections);
     } catch (error) {
         return next(error)
-    }
-}
-
-exports.saveGame = async (req, res, next) => {
-    try {
-        const { userID, gameID: gameIDParams } = req.params;
-
-        const gameInfo = await GameOnRedis.get(gameIDParams);
-
-        if (!gameInfo) {
-            return res.sendStatus(403);
-        }
-
-        const round = {
-            endedBy: gameInfo.endedBy,
-            winner: gameInfo.winner,
-            whitePlayerID: gameInfo.whitePlayerID,
-            blackPlayerID: gameInfo.blackPlayerID,
-            moves: gameInfo.moves,
-            count: Number.parseInt(gameInfo.count),
-        }
-        const rounds = [];
-        const gameID = gameInfo.gameID;
-
-        const gameStored = await Game.findOne({ gameID })
-
-        if (!gameStored) {
-            rounds.push(round)
-            const { _id } = await Game.create({ gameID, rounds })
-            await User.findByIdAndUpdate(userID, { $push: { savedGames: _id } })
-            return res.sendStatus(200);
-        }
-        if (gameStored.rounds.findIndex((gameround) => (gameround.count === round.count)) === -1) {
-            gameStored.rounds.push(round)
-            await gameStored.save()
-            return res.sendStatus(200)
-        }
-        res.sendStatus(403)
-    } catch (error) {
-        console.log('error in saving', error.message)
     }
 }
 

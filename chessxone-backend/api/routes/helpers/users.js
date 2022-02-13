@@ -20,8 +20,6 @@ router.get('/:userID/connection/online',auth,userController.getOnlineConnections
 router.post('/:userID/connection/requests',auth,userController.addConnectionRequest)
 router.put('/:userID/connection/approve',auth,userController.approveConnectionRequest)
 
-router.put('/:userID/games/:gameID',auth,userController.saveGame);
-
 router.get('/:userID/feed',auth,userController.getFeed);
 
 module.exports = router;
