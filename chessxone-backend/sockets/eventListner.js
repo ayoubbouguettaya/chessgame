@@ -13,7 +13,7 @@ const onConnexion = async (socket) => {
         socket.userData = await userController.connect(socket.userID)
         const connectedFriends = await userController.getOnlineConnections(socket.userID);
 
-        
+
         await eventEmitter.nofityAllconnectedFriends(connectedFriends, socket.userData);
         await eventEmitter.emitSession(socket.userID);
 
