@@ -34,7 +34,7 @@ const userSchema = new Schema({
     savedGames : [
         {
             type: Schema.Types.ObjectId,
-             ref: 'Game'
+             ref: 'SavedGame'
         }
     ]
 });

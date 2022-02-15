@@ -1,6 +1,6 @@
 const redisCommand = require('../utils/redisCommand');
 
-const { generateNewObjectID, generate_gameID_Key } = require('../utils/')
+const { generateNewObjectID, generate_gameID_Key } = require('../utils')
 
 const set = async (hosterID, guestID,addInfo = {}) => {
     try {

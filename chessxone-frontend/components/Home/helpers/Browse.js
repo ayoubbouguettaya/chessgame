@@ -38,7 +38,7 @@ const Browse = ({ userID }) => {
 
     const handleRequestGame = async (playerID) => {
         try {
-            await fetchApi.put({ url: `/user-game/${userID}/request`, data: { userID: playerID } });
+            await fetchApi.put({ url: `/matchs/${userID}/request`, data: { userID: playerID } });
             setSuggestedUsersId(suggestedUsersId.filter((suggestedplayerID) => suggestedplayerID !== playerID))
         } catch (error) {
             throw new Error('request game failed')
@@ -87,7 +87,7 @@ const ConnectionItem = ({ userID, isFriend, handleRequestGame, handleRequestGame
     const getuserInfo = async () => {
         try {
             setIsLoading(true)
-            const { data } = await fetchApi.get({ url: `/users/${userID}/user-info` })
+            const { data } = await fetchApi.get({ url: `/users/${userID}/` })
             setuserInfo(data)
         } catch (error) {
         } finally {

@@ -23,7 +23,8 @@ import {
 
     CLEAR_TAB_NOTIFICATION,
     REMOVE_USER_GAME_REQUEST,
-    REMOVE_USER_GAME_INVITATION
+    REMOVE_USER_GAME_INVITATION,
+    SESSION_SUCCESS
 } from './actions';
 
 const globalReducer = (state, action) => {
@@ -52,6 +53,9 @@ const globalReducer = (state, action) => {
             return { ...state, error: { code, message } };
         }
 
+        case SESSION_SUCCESS : {
+            return {...state, isConnected: true}
+        }
         case SET_CONNECTED_FRIEND: {
             const { connectedFriends } = action.payload;
             return { ...state, connectedFriends }

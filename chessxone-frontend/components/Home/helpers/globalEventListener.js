@@ -1,6 +1,6 @@
 import { membersSocket } from '../../../utils/socket-io-instance'
 import {
-    SET_CONNECTED_FRIEND,
+    SESSION_SUCCESS,
     FRIEND_STATUS_CHANGED,
     USER_GAME_REQUEST_CANCLED,
     ADD_NEW_REQUEST_CONNECTION,
@@ -11,8 +11,8 @@ import {
 
 
 const initiliseGlobalEventListners = (dispatch) => {
-    membersSocket.on('session', ({ connectedFriends }) => {
-        dispatch({ type: SET_CONNECTED_FRIEND, payload: { connectedFriends } })
+    membersSocket.on('session', () => {
+        dispatch({ type: SESSION_SUCCESS })
     })
 
     membersSocket.on('friend_changed_status', (data) => {

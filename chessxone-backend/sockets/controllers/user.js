@@ -1,11 +1,12 @@
 const User = require('../../api/models/user');
-const UserOnRedis = require('../../redisAccess/user');
-const UserGameRequestOnRedis = require('../../redisAccess/userGameRequest')
-const UserGamesInvitationsOnRedis = require('../../redisAccess/userGamesInvitation')
+const UserOnHotAccess = require('../../hotAccess/user');
 
+const redisCommand = require('../../utils/redisCommand');
+const { LAST_CONNECTED_USERS } = require('../../utils/redisKeys');
 
-const connectAndgetUserData = async (userID) => {
+const connect = async (userID) => {
     try {
+
         const userInfo = await User.findById(userID, 'userName tagID picture').lean();
         const lastTimeConnected = new Date();
         const dataToStore = {
@@ -16,42 +17,29 @@ const connectAndgetUserData = async (userID) => {
             isPlaying: false,
             lastTimeConnected
         };
-        UserOnRedis.set(userID,dataToStore)
-        
+
+        await UserOnHotAccess.set(userID, dataToStore)
+        await redisCommand.sadd(LAST_CONNECTED_USERS, socket.userID)
+
         return dataToStore;
-    }
-    catch (error) {
+    } catch (error) {
         return error;
     }
+
 }
 
 const disconnect = async (userID) => {
     try {
-        return await UserOnRedis.setIsConnected(userID, false)
+        await redisCommand.srem(LAST_CONNECTED_USERS, socket.userID)
+        return await UserOnHotAccess.setIsConnected(userID, false)
     } catch (error) {
         return error;
     }
 }
 
-const getConnectedFriends = async (userID) => {
+const get = async (userID) => {
     try {
-        const user = await User.findById(userID, 'connections').lean();
-
-        if (!user) {
-
-            return []
-        }
-        const { connections } = user;
-
-        return await UserOnRedis.getOnlyConnectedUsersData(connections);
-    } catch (error) {
-        return error;
-    }
-}
-
-const getData = async (userID) => {
-    try {
-        const userInfoInCache = await UserOnRedis.get(userID)
+        const userInfoInCache = await UserOnHotAccess.get(userID)
 
         if (!userInfoInCache) {
             return await User.findById(userID, 'userName tagID picture').lean();
@@ -63,113 +51,34 @@ const getData = async (userID) => {
     }
 }
 
-/* User Game */
-
-const getUserGameRequest = async (userID) => {
+const getOnlineConnections = async (userID) => {
     try {
-        return await UserGameRequestOnRedis.get(userID);
-    } catch (error) {
-        return error
-    }
-}
+        const user = await User.findById(userID, 'connections').lean();
 
-const getUserGamesInvitations = async (userID) => {
-    try {
-        return await UserGamesInvitationsOnRedis.get(userID);
-    } catch (error) {
-        return error
-    }
-}
+        if (!user) {
 
-const isAllowedToRequestGame = async (hosterID, guestID) => {
-    try {
-        if (hosterID === guestID) {
-            return false;
+            return []
         }
-        const userGameInvitationSet = await UserGamesInvitationsOnRedis.get(hosterID)
-        const guestUserGameInvitationSet = await UserGamesInvitationsOnRedis.get(guestID)
+        const { connections } = user;
 
-        if (guestUserGameInvitationSet.includes(hosterID)) {
-            return false
-        }
+        const onlineConnections = [];
 
-        if (userGameInvitationSet.includes(guestID)) {
-            return false
-        }
-
-        const userGameRequestInfo = await UserGameRequestOnRedis.get(hosterID);
-        if (userGameRequestInfo) {
-            return false;
-        }
-
-        return true;
-    } catch (error) {
-        return error;
-    }
-}
-
-const isAllowedToApproveGame = async (guestID, hosterID) => {
-    try {
-        const userGameRequestInfo = await UserGameRequestOnRedis.get(hosterID)
-
-        if (!userGameRequestInfo) {
-            await UserGamesInvitationsOnRedis.pull(guestID, hosterID)
-            return false;
-        }
-
-        if (userGameRequestInfo.opponentID !== guestID) {
-            return false;
-        }
-
-        const guestGameInvitationsSet = await UserGamesInvitationsOnRedis.get(guestID)
-        if (!guestGameInvitationsSet.includes(hosterID)) {
-            return false;
-        }
-
-        return true;
-    } catch (error) {
-        return error;
-    }
-}
-
-const requestGame = async (hosterID, guestID) => {
-    try {
-        await UserGameRequestOnRedis.set(hosterID, guestID)
-
-        await UserGamesInvitationsOnRedis.push(guestID, hosterID)
-        await UserOnRedis.setIsLocked(hosterID, true);
-
-        const playerToNotifyGameCancled = await UserGamesInvitationsOnRedis.get(hosterID)
-
-        if (playerToNotifyGameCancled) {
-            UserGamesInvitationsOnRedis.clear(hosterID)
-            for (let i = 0; i < playerToNotifyGameCancled.length; i++) {
-                await UserGameRequestOnRedis.clear(playerToNotifyGameCancled[i])
+        for (let connectionID of connections) {
+            const connection = await UserOnHotAccess.get(connectionID.toString())
+            if (connection && connection.isConnected) {
+                onlineConnections.push({
+                    _id: connection._id,
+                    userName: connection.userName,
+                    tagID: connection.tagID,
+                    picture: connection.picture,
+                    isConnected: connection.isConnected,
+                    isLocked: connection.isLocked,
+                    isPlaying: connection.isPlaying,
+                })
             }
         }
 
-        return playerToNotifyGameCancled;
-
-    } catch (error) {
-        return error;
-    }
-}
-
-const prepareCreateGame = async (guestID, hosterID) => {
-    try {
-        await UserGameRequestOnRedis.clear(hosterID)
-        await UserOnRedis.setIsLocked(guestID, true);
-
-        const playerToNotifyGameCancled = await UserGamesInvitationsOnRedis.get(guestID)
-
-        if (playerToNotifyGameCancled) {
-            UserGamesInvitationsOnRedis.clear(guestID)
-            for (let i = 0; i < playerToNotifyGameCancled.length; i++) {
-                await UserGameRequestOnRedis.clear(playerToNotifyGameCancled[i])
-            }
-        }
-
-        return playerToNotifyGameCancled;
+        return onlineConnections
     } catch (error) {
         return error;
     }
@@ -177,18 +86,9 @@ const prepareCreateGame = async (guestID, hosterID) => {
 
 const joinGame = async (userID, gameInfo) => {
     try {
-        await UserOnRedis.setGame(userID, gameInfo);
-        await UserOnRedis.setIsLocked(true)
-        await UserOnRedis.setIsPlaying(true)
-    } catch (error) {
-        return error;
-    }
-}
-
-const getGameID = async (userID) => {
-    try {
-        const { gameID = '' } = await UserOnRedis.get(userID, gameInfo);
-        return gameID
+        await UserOnHotAccess.setGame(userID, gameInfo);
+        await UserOnHotAccess.setIsLocked(true)
+        await UserOnHotAccess.setIsPlaying(true)
     } catch (error) {
         return error;
     }
@@ -196,26 +96,19 @@ const getGameID = async (userID) => {
 
 const leaveGame = async (userID) => {
     try {
-        await UserOnRedis.setIsLocked(userID, false);
-        await UserOnRedis.setIsPlaying(userID, false);
-        return await UserOnRedis.removeGameID(userID)
+        await UserOnHotAccess.setIsLocked(userID, false);
+        await UserOnHotAccess.setIsPlaying(userID, false);
+        return await UserOnHotAccess.removeGameID(userID)
     } catch (error) {
         return error;
     }
 }
 
 module.exports = {
-    connectAndgetUserData,
+    connect,
     disconnect,
-    getConnectedFriends,
-    getData,
-    getUserGameRequest,
-    getUserGamesInvitations,
-    isAllowedToRequestGame,
-    isAllowedToApproveGame,
-    requestGame,
-    prepareCreateGame,
+    getOnlineConnections,
+    get,
     joinGame,
-    getGameID,
     leaveGame
 }

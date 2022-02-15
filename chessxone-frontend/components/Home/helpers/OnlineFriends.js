@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react'
+import { useContext, useState,useEffect } from 'react'
 
 import { userContext } from '../../../store/user/context'
 import apiFetch from '../../../utils/apiFetch'
@@ -13,10 +13,14 @@ const OnlineFriends = () => {
         dispatch({ type: USER_GAME_REQUEST_SUCCESS, payload: friendData })
     }
 
-    const refrechOnlineFriend = async () => {
+    useEffect(()=> {
+        fetchOnlineConnections();
+    },[]);
+
+    const fetchOnlineConnections = async () => {
         try {
             setIsLoadingData(true)
-            const { data } = await apiFetch.get({ url: `/users/${userID}/connection/online-friend` })
+            const { data } = await apiFetch.get({ url: `/users/${userID}/connection/online` })
             console.log(data)
             dispatch({ type: SET_CONNECTED_FRIEND, payload: { connectedFriends: data } })
         } catch (error) {
@@ -31,7 +35,7 @@ const OnlineFriends = () => {
                 <div className={styles.heading}>
                     <p><small> Online Friends ({connectedFriends ? connectedFriends.length : '0'})</small> </p>
                 </div>
-                <button disabled={isLoadingData} onClick={refrechOnlineFriend}>
+                <button disabled={isLoadingData} onClick={fetchOnlineConnections}>
                     {!isLoadingData ? (<img src="/icon/rotate.svg" height="15" width="15" />) : ('...')}
                 </button>
             </div>
@@ -72,7 +76,7 @@ const FriendStatus = ({ handleInviteFriendSuccess, userID, friendID, isPlaying, 
     const handleInviteFriend = async (friendID) => {
         try {
             setIsLoading(true)
-            await apiFetch.put({ url: `/user-game/${userID}/request`, data: { userID: friendID } });
+            await apiFetch.put({ url: `/matchs/${userID}/request`, data: { userID: friendID } });
             handleInviteFriendSuccess()
         } catch (error) {
 
