@@ -1,18 +1,21 @@
 import React, { useState } from 'react'
 
 import styles from './modal-game.module.css';
-import { endedBy as ENDEDBY } from '../../gameLogic/constants'
+
+import {EndedBy} from 'chessxone-shared/types'
+ 
 import { membersSocket } from '../../../../utils/socket-io-instance';
 import Link from 'next/link';
+import { ASK_REMATCH_EVENT } from 'chessxone-shared/events';
 const ModalGameEnd = ({ handleAcceptRematch, endedBy, winner, handleRematch, handleSaveGame }) => {
     const [askedToRematch, setAskedToRematch] = useState(false);
     const [isAskingRematch, setIsAskingRematch] = useState(false);
     const [isWaitingForGame, setIsWaitingForGame] = useState(false);
     const [isSavingGame, setIsSavingGame] = useState(false)
 
-    const isNotAllowedToRematch = (endedBy === ENDEDBY.TIME_OUT) || (endedBy === ENDEDBY.LEAVE_OUT)
+    const isNotAllowedToRematch = (endedBy === EndedBy.TIME_OUT) || (endedBy === EndedBy.LEAVE_OUT)
 
-    membersSocket.on("ask_rematch", () => {
+    membersSocket.on(ASK_REMATCH_EVENT, () => {
         setAskedToRematch(true)
 
     })
@@ -36,7 +39,7 @@ const ModalGameEnd = ({ handleAcceptRematch, endedBy, winner, handleRematch, han
     return (
         <div className={styles.modal_container}>
             <div>
-                {(endedBy !== ENDEDBY.DRAW || endedBy !== ENDEDBY.STEAL_MATE) ? (
+                {(endedBy !== EndedBy.DRAW || endedBy !== EndedBy.STEAL_MATE) ? (
                     <p>{` ${winner} is The winner`}</p>
                 ) : (
                         '------------'

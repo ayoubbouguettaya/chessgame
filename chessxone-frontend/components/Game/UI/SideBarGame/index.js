@@ -2,8 +2,10 @@ import React, { useContext } from 'react'
 
 import { gameContext } from '../../../../store/game/context'
 import { PAWN_PROMOTION, CASTLING_KING } from '../../../../store/game/actions'
-import { QUEEN, kNIGHT, BISHOP, ROOK, gameStatus } from '../../gameLogic/constants';
-import * as eventEmitter from '../../gameLogic/eventEmitter'
+import * as eventEmitter from '../../EventHandlers/eventEmitter'
+
+import {GameStatus} from 'chessxone-shared/types'
+import {QUEEN, kNIGHT, BISHOP, ROOK,} from 'chessxone-shared/constants'
 
 import Box from '../../../UI/Box';
 import styles from './sidebargame.module.css';
@@ -40,7 +42,7 @@ const SideBarGame = () => {
 
     return (
         <div className={styles.side_bar_container}>
-            {status === gameStatus.running && (
+            {status === GameStatus.running && (
                 <div className={styles.resign_box}>
                     <Box >
                         <button onClick={handleResign}>

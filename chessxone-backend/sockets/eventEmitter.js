@@ -1,12 +1,22 @@
 const io = require('../config/socketIO-instance');
 
+const { CONNECTION_UPDATE_EVENT,
+    SESSION_EVENT,
+    MOVE_EVENT,
+    GAME_START_EVENT,
+    ASK_REMATCH_EVENT,
+    GAME_NOT_AVAILABLE_EVENT,
+    CASTLE_KING_EVENT,
+    PAWN_PROMOTION_EVENT,
+    GAME_END_EVENT,
+} = require('chessxone-shared/events')
 /*  notify All connected Friends */
-const nofityAllconnectedFriends = async (connectedFriends, userData, event = 'friend_changed_status') => {
+const nofityAllconnectedFriends = async (connectedFriends, userData, event = CONNECTION_UPDATE_EVENT) => {
     try {
         for (let i = 0; i < connectedFriends.length; i++) {
             const friendID = connectedFriends[i]._id.toString();
-            if (event = 'friend_changed_status') {
-                        await io.to(friendID).emit("friend_changed_status", userData);
+            if (event = CONNECTION_UPDATE_EVENT) {
+                await io.to(friendID).emit(CONNECTION_UPDATE_EVENT, userData);
             }
         }
 
@@ -18,7 +28,7 @@ const nofityAllconnectedFriends = async (connectedFriends, userData, event = 'fr
 
 const emitSession = async (userID) => {
     try {
-        await io.to(userID).emit("session", {  });
+        await io.to(userID).emit(SESSION_EVENT, {});
         return;
     } catch (error) {
         return error;
@@ -27,7 +37,7 @@ const emitSession = async (userID) => {
 // Game Emitters 
 const emitGameStart = async (userID, gameInfo) => {
     try {
-        await io.to(userID).emit("game_start", gameInfo);
+        await io.to(userID).emit(GAME_START_EVENT, gameInfo);
         return;
     } catch (error) {
         return error;
@@ -36,7 +46,7 @@ const emitGameStart = async (userID, gameInfo) => {
 
 const emitAskRematch = async (userID) => {
     try {
-        await io.to(userID).emit("ask_rematch");
+        await io.to(userID).emit(ASK_REMATCH_EVENT);
         return;
     } catch (error) {
         return error;
@@ -45,7 +55,7 @@ const emitAskRematch = async (userID) => {
 
 const emitGameNotAvailable = async (userID) => {
     try {
-        await io.to(userID).emit("game_not_available");
+        await io.to(userID).emit(GAME_NOT_AVAILABLE_EVENT);
         return;
     } catch (error) {
         return error;
@@ -54,7 +64,7 @@ const emitGameNotAvailable = async (userID) => {
 
 const emitMove = async (userID, move) => {
     try {
-        await io.to(userID).emit('move', move);
+        await io.to(userID).emit(MOVE_EVENT, move);
         return;
     } catch (error) {
         return error;
@@ -63,7 +73,7 @@ const emitMove = async (userID, move) => {
 
 const emitCastleMove = async (userID, side) => {
     try {
-        await io.to(userID).emit("castle_king", { side });
+        await io.to(userID).emit(CASTLE_KING_EVENT, { side });
         return;
     } catch (error) {
         return error;
@@ -72,7 +82,7 @@ const emitCastleMove = async (userID, side) => {
 
 const emitPawnPromotion = async (userID, piece) => {
     try {
-        await io.to(userID).emit("pawn_promotion", { piece })
+        await io.to(userID).emit(PAWN_PROMOTION_EVENT, { piece })
     } catch (error) {
         return error;
     }
@@ -80,7 +90,7 @@ const emitPawnPromotion = async (userID, piece) => {
 
 const emitGameEnd = async (userID, { winner, endedBy }) => {
     try {
-        await io.to(userID).emit("game_end", { endedBy, winner })
+        await io.to(userID).emit(GAME_END_EVENT, { endedBy, winner })
     } catch (error) {
         return error;
     }

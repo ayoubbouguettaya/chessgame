@@ -1,8 +1,11 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
 
 import { gameContext } from '../../../../store/game/context';
-import { gameStatus, BLACK, WHITE } from '../../gameLogic/constants';
-import { handleClaimTimeOut } from '../../gameLogic/eventEmitter'
+
+import {GameStatus} from 'chessxone-shared/types'
+import {BLACK, WHITE} from 'chessxone-shared/constants'
+
+import { handleClaimTimeOut } from '../../EventHandlers/eventEmitter'
 
 import Box from '../../../UI/Box';
 
@@ -43,7 +46,7 @@ const Indicator = () => {
          }
 
         let interval;
-        if (status !== gameStatus.running) {
+        if (status !== GameStatus.running) {
             setTimer(0);
         } else {
             if (runTimer) {

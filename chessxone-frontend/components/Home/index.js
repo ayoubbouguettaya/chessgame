@@ -21,6 +21,9 @@ import {
     CLEAR_TAB_NOTIFICATION
 } from '../../store/user/actions';
 
+import {BLACK} from 'chessxone-shared/constants'
+import { NEW_GAME_READY_EVENT } from 'chessxone-shared/events';
+
 const LOBBY = 'LOBBY';
 const CONNECTION = 'CONNECTION';
 const FRIEND = 'FRIEND';
@@ -32,6 +35,9 @@ const HomeComponent = () => {
 
     useEffect(() => {
         initiliseGlobalEventListners(dispatch)
+        
+        console.log(BLACK)
+
     }, [])
 
     const handleClearTabNotifacation = (Event) => {
@@ -39,7 +45,7 @@ const HomeComponent = () => {
     }
 
     useEffect(() => {
-        membersSocket.on("new_game_ready", async ({ gameID }) => {
+        membersSocket.on(NEW_GAME_READY_EVENT, async ({ gameID }) => {
             if (gameID) {
                 router.replace(`/game/${gameID}`)
                 dispatch({ type: NEW_GAME_READY })

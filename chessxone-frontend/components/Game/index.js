@@ -7,9 +7,11 @@ import SideBarGame from './UI/SideBarGame';
 import styles from './game.module.css'
 
 import { gameContext } from '../../store/game/context';
-import initialiseAllEventListner from './gameLogic/eventsListners';
-import { gameStatus } from './gameLogic/constants';
-import * as eventEmitter from './gameLogic/eventEmitter';
+import initialiseAllEventListner from './EventHandlers/eventsListners';
+
+import { GameStatus } from 'chessxone-shared/types';
+
+import * as eventEmitter from './EventHandlers/eventEmitter';
 import ModalGameEnd from './UI/ModalGameEnd';
 import ModalGameUnavailble from './UI/ModalGameUnavailable';
 import fetchApi from '../../utils/apiFetch';
@@ -52,7 +54,7 @@ const GameComponent = () => {
 
     }, []);
 
-    if (status === gameStatus.loading) {
+    if (status === GameStatus.loading) {
         return (<div className={styles.loading_container}><p>Loading game </p></div>);
     }
 
@@ -74,7 +76,7 @@ const GameComponent = () => {
 
     return (
         <div>
-            {status === gameStatus.ended && (
+            {status === GameStatus.ended && (
                 <ModalGameEnd
                     endedBy={endedBy}
                     winner={winner}
@@ -83,7 +85,7 @@ const GameComponent = () => {
                     handleSaveGame={handleSaveGame}
                 />
             )}
-            {status === gameStatus.not_available && (
+            {status === GameStatus.not_available && (
                 <ModalGameUnavailble />
             )}
             <div className={styles.game_container}>

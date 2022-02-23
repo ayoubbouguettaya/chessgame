@@ -12,11 +12,13 @@ import {
     EMPTY
 } from './constants';
 
-export const inverseColor = (color) => (color === BLACK ? WHITE : BLACK);
+import { Board, Color, Column, Piece, Row } from './types';
 
-export const toNotation = (piece, row, column) => (`${getPieceNotation(piece)}${columnNotation[column]}${rowNotation[row]}`);
+export const inverseColor = (color: Color) => (color === BLACK ? WHITE : BLACK);
 
-const getPieceNotation = (piece) => {
+export const toNotation = (piece: Piece, row : Row, column: Column) => (`${getPieceNotation(piece)}${columnNotation[column]}${rowNotation[row]}`);
+
+export const getPieceNotation = (piece: Piece) => {
     switch (piece) {
         case kNIGHT:
             return 'N'
@@ -37,7 +39,7 @@ const getPieceNotation = (piece) => {
     }
 }
 
-const parsePieceNotation = (pieceNotation) => {
+export const parsePieceNotation = (pieceNotation : string) : Piece => {
     switch (pieceNotation) {
         case 'N':
             return kNIGHT
@@ -54,32 +56,32 @@ const parsePieceNotation = (pieceNotation) => {
         case 'E':
             return EMPTY
         default:
-            return '';
+            return EMPTY;
     }
 }
 
-export const parseNotation = (notation) => {
+export const parseNotation = (notation: string) => {
     const piece = parsePieceNotation(notation.charAt(0))
     const column = columnNotation.indexOf(notation.charAt(1))
     const row = rowNotation.indexOf(notation.charAt(2))
     return { row, column, piece }
 };
 
-export const switchTurn = (turn) => {
+export const switchTurn = (turn : Color) => {
     if (turn === BLACK) {
         return WHITE;
     }
     return BLACK;
 }
 
-export const isInboundaries = ({ row, column }) => {
+export const isInboundaries = ({ row , column }: {row: number,column: number}) => {
     if (row >= 0 && row < 8 && column >= 0 && column < 8) {
         return true
     }
     return false
 }
 
-export const getPiece = (board, { row, column }, addRow = 0, addColumn = 0) => {
+export const getPiece = (board: Board, { row, column } : {row: number,column: number}, addRow = 0, addColumn = 0) => {
     if (isInboundaries({ row: row + addRow, column: column + addColumn })) {
         const nextSquare = board[row + addRow][column + addColumn];
         return {
@@ -92,8 +94,8 @@ export const getPiece = (board, { row, column }, addRow = 0, addColumn = 0) => {
     return null;
 }
 
-export const getPawnPromotion = (board, playerColor) => {
-    const lastRow = playerColor === BLACK ? 7 : 0;
+export const getPawnPromotion = (board: Board, player: Color ) => {
+    const lastRow = player === BLACK ? 7 : 0;
 
     for (let column = 0; column < 8; column++) {
         if (board[lastRow][column].piece === PAWN) {

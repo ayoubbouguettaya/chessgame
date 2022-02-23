@@ -1,0 +1,15 @@
+import { CastlingSide, Color, Piece } from "./types";
+export declare const PAWN: Piece;
+export declare const BISHOP: Piece;
+export declare const kNIGHT: Piece;
+export declare const KING: Piece;
+export declare const QUEEN: Piece;
+export declare const ROOK: Piece;
+export declare const EMPTY: Piece;
+export declare const BLACK: Color;
+export declare const WHITE: Color;
+export declare const columnNotation: string[];
+export declare const rowNotation: string[];
+export declare const QUEEN_SIDE: CastlingSide;
+export declare const KING_SIDE: CastlingSide;
+export declare const BOTH_SIDE: CastlingSide;
