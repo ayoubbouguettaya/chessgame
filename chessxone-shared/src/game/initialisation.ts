@@ -8,15 +8,20 @@ import {
     QUEEN,
     ROOK,
     EMPTY,
-} from './constants';
+} from '../constants';
+import { Color, Column, Piece, Row } from '../types';
 
-import { toNotation, inverseColor } from './utils';
+import { toNotation, inverseColor } from '../utils';
 
 export const setupBoard = () => {
-    let bgColor = BLACK;
-    let piece;
+    /* 
+    TODO : bgColor ? is it right to save in the global state of Board
+    */
+    let bgColor: Color = BLACK;
+    let piece: Piece;
     let player = undefined;
     let board = [];
+
     for (let row = 0; row < 8; row++) {
         let currentRow = [];
         for (let column = 0; column < 8; column++) {
@@ -57,7 +62,7 @@ export const setupBoard = () => {
                 row,
                 column,
                 piece,
-                notation: toNotation(piece,row, column),
+                notation: toNotation(piece, <Row> row, <Column> column),
                 player,
             }
             currentRow.push(square)

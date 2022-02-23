@@ -15,10 +15,10 @@ import {
     GAME_NOT_AVAILABLE,
 } from './actions';
 
-import { setupBoard } from '../../components/Game/gameLogic/initialisation';
+import { setupBoard } from 'chessxone-shared/game/initialisation';
+
 import {
     EMPTY,
-    gameStatus,
     PAWN,
     BLACK,
     ROOK,
@@ -27,29 +27,33 @@ import {
     QUEEN_SIDE,
     KING_SIDE,
     BOTH_SIDE,
-} from '../../components/Game/gameLogic/constants';
+} from 'chessxone-shared/constants';
+
+import {
+    GameStatus,
+} from 'chessxone-shared/types';
 
 import {
     parseNotation,
     switchTurn,
     getPawnPromotion,
-} from '../../components/Game/gameLogic/utils';
+} from 'chessxone-shared/utils';
 
 import {
     calculateAllowedSquares,
     movePiece,
     getCastlePossibility,
     castleKing,
-} from '../../components/Game/gameLogic/movesLogic';
+} from 'chessxone-shared/game/moves';
 
 import {
     detectedCheck,
     filterCheckMoves,
     checkForAnyLegalMove,
     getKingPosition,
-} from '../../components/Game/gameLogic/endGameLogic';
+} from 'chessxone-shared/game/ending';
 
-import * as eventEmitter from '../../components/Game/gameLogic/eventEmitter';
+import * as eventEmitter from '../../components/Game/EventHandlers/eventEmitter';
 
 const vibrate = () => {
     if (window && window.navigator) {
@@ -59,6 +63,7 @@ const vibrate = () => {
 }
 
 const reducer = (state, action) => {
+    console.log(action)
     switch (action.type) {
         case SETUP_BOARD: {
             const { playerColor, blackUserName, whiteUserName, turn, gameID, hosterWin, guestWin } = action.payload;
@@ -71,7 +76,7 @@ const reducer = (state, action) => {
                 blackUserName,
                 whiteUserName,
                 turn,
-                status: gameStatus.running,
+                status: GameStatus.running,
                 message: 'the game start',
                 winner: '',
                 waitPromotePawn: false,
@@ -83,7 +88,7 @@ const reducer = (state, action) => {
             }
         }
         case GAME_NOT_AVAILABLE: {
-            return { ...state, status: gameStatus.not_available }
+            return { ...state, status: GameStatus.not_available }
         }
         case SELECT_PIECE: {
             const { row, column, piece } = action.payload;
@@ -96,12 +101,13 @@ const reducer = (state, action) => {
                 return { ...state, allowedSquares: [] };
             }
             /* calculate allowed moves */
-            let allowedSquares = calculateAllowedSquares({ board, playerColor, row, column, piece });
+            let allowedSquares = calculateAllowedSquares(board, playerColor, row, column, piece);
             /* 
             filter the moves that causes a check
             */
+            console.log('before filtring', allowedSquares.length)
             allowedSquares = filterCheckMoves(allowedSquares, { board, playerColor, selectedSquare: { row, column, piece } });
-
+            console.log('after filtring', allowedSquares.length)
             let newMessage = `you select ${piece}`;
             if (allowedSquares.length === 0) {
                 newMessage = `you can't move ${piece}`;
@@ -112,6 +118,7 @@ const reducer = (state, action) => {
                 possibilityToCastle = getCastlePossibility(board, playerColor)
             }
 
+            console.log('selected piece succfully')
             return {
                 ...state,
                 selectedSquare: { row, column, piece },
@@ -131,7 +138,7 @@ const reducer = (state, action) => {
                 possibilityToCastle,
                 selectedSquare = ''
             } = state;
-
+            console.log('move_piece_break here 1')
             if (!selectedSquare) {
                 return state;
             }
@@ -141,6 +148,7 @@ const reducer = (state, action) => {
             let turn = switchTurn(playerColor)
             let waitPromotePawn = false;
             let newPossibilityToCastle = [...possibilityToCastle];
+            console.log('move_piece_break here 2', state)
 
             if (allowedSquares.findIndex((nextSquare) => (nextSquare.row === row && nextSquare.column === column)) === -1) {
                 return {
@@ -149,7 +157,11 @@ const reducer = (state, action) => {
                     allowedSquares: [],
                 };
             }
+            console.log('move_piece_break here 3')
+
             const newBoard = movePiece(board, { row: selectedSquareRow, column: selectedSquareColumn }, { row, column });
+            console.log('move_piece_break here 4')
+
             if (newBoard[row][column].piece === PAWN) {
                 const pawnToPromote = getPawnPromotion(newBoard, playerColor);
                 if (pawnToPromote) {
@@ -158,10 +170,13 @@ const reducer = (state, action) => {
                 }
             }
 
+            console.log('move_piece_break here 4')
+
             if (board[selectedSquareRow][selectedSquareColumn].piece === KING) {
                 forbidenToCastle.push(BOTH_SIDE)
                 newPossibilityToCastle = [];
             }
+            console.log('move_piece_break here 5')
 
             if (forbidenToCastle.includes(BOTH_SIDE) && board[selectedSquareRow][selectedSquareColumn].piece === ROOK) {
                 if (!forbidenToCastle.includes(QUEEN_SIDE) && selectedSquareColumn === 0) {
@@ -173,7 +188,7 @@ const reducer = (state, action) => {
                     newPossibilityToCastle = newPossibilityToCastle.filter((rule) => rule === QUEEN_SIDE)
                 }
             }
-
+            console.log('moved Piece SUccesfullt')
             return {
                 ...state,
                 board: [...newBoard],
@@ -231,17 +246,17 @@ const reducer = (state, action) => {
               */
             const newBoard = movePiece(board, fromSquare, toSquare);
 
-            if (!checkForAnyLegalMove({ board: newBoard, playerColor })) {
-                if (detectedCheck({ board: newBoard, playerColor })) {
+            if (!checkForAnyLegalMove(newBoard, playerColor)) {
+                if (detectedCheck(newBoard, playerColor)) {
                     newMessage = 'the king is check mated';
                     eventEmitter.handleClaimCheckMate(gameID)
                 } else {
                     newMessage = 'steal mate';
                     eventEmitter.handleClaimStealMate(gameID)
                 }
-                newStatus = gameStatus.ended;
+                newStatus = GameStatus.ended;
             } else {
-                if (detectedCheck({ board: newBoard, playerColor })) {
+                if (detectedCheck(newBoard, playerColor)) {
                     newMessage = 'the king is checked';
                     /* highlight king */
                     kingHighlighted = getKingPosition(newBoard, playerColor)
@@ -313,7 +328,7 @@ const reducer = (state, action) => {
                 newMessage = "ops, something want wrong, game canceled,please report this behaviour ";
                 return {
                     ...state,
-                    status: gameStatus.ended,
+                    status: GameStatus.ended,
                     message: newMessage,
                 }
             }
@@ -324,15 +339,15 @@ const reducer = (state, action) => {
             board[fromSquare.row][fromSquare.column].piece = piece;
             const newBoard = movePiece(board, fromSquare, toSquare);
 
-            if (!checkForAnyLegalMove({ board: newBoard, playerColor })) {
-                if (detectedCheck({ board: newBoard, playerColor })) {
+            if (!checkForAnyLegalMove( newBoard, playerColor )) {
+                if (detectedCheck(newBoard, playerColor)) {
                     newMessage = 'the king is check mated';
                 } else {
                     newMessage = 'steal mate';
                 }
-                newStatus = gameStatus.ended;
+                newStatus = GameStatus.ended;
             } else {
-                if (detectedCheck({ board: newBoard, playerColor })) {
+                if (detectedCheck(newBoard, playerColor)) {
                     newMessage = 'the king is checked';
                     /* highlight king */
                     kingHighlighted = getKingPosition(newBoard, playerColor)
@@ -367,7 +382,7 @@ const reducer = (state, action) => {
 
             return {
                 ...state,
-                status: gameStatus.ended,
+                status: GameStatus.ended,
                 winner,
                 endedBy: endedBy,
                 message: messageToShow,

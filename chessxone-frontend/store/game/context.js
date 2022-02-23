@@ -1,7 +1,7 @@
 import { createContext, useMemo, useReducer } from 'react'
 
 import reducer from './reducer'
-import { gameStatus } from '../../components/Game/gameLogic/constants';
+import { GameStatus} from 'chessxone-shared/types'
 
 const initialData = {
     gameID: undefined,
@@ -15,7 +15,7 @@ const initialData = {
     kingHighlighted : undefined,
 
     turn: undefined,
-    status : gameStatus.loading,
+    status : GameStatus.loading,
     timerType: undefined,
     
     waitPromotePawn: false,

@@ -5,6 +5,7 @@ const gameController = require('./controllers/game');
 const eventEmitter = require('./eventEmitter');
 
 const { COLOR, endedBy, gameStatus } = require('../utils/constants');
+const { JOIN_GAME_EVENT, ASK_REMATCH_EVENT, ACCEPT_REMATCH_EVENT, MOVE_EVENT, CASTLE_KING_EVENT, PAWN_PROMOTION_EVENT, RESIGN_EVENT, TIME_OUT_EVENT, CHECK_MATE_EVENT, STEAL_MATE_EVENT, OFFER_DRAW_EVENT, LEAVE_GAME_EVENT } = require('chessxone-shared/events');
 
 const onConnexion = async (socket) => {
     try {
@@ -44,7 +45,7 @@ const onDisconnect = async (socket) => {
 }
 /* Game Events*/
 const onJoinGame = (socket) => {
-    socket.on("join_game", async ({ gameID }) => {
+    socket.on(JOIN_GAME_EVENT, async ({ gameID }) => {
         const userID = socket.userID;
         const gameStored = await gameController.getGame(gameID)
         if (!gameStored) {
@@ -67,7 +68,7 @@ const onJoinGame = (socket) => {
 }
 
 const onAskRematch = (socket) => {
-    socket.on("ask_rematch", async ({ gameID }) => {
+    socket.on(ASK_REMATCH_EVENT, async ({ gameID }) => {
         const userID = socket.userID;
         const gameStored = await gameController.getGame(gameID)
         if (!gameStored) {
@@ -82,7 +83,7 @@ const onAskRematch = (socket) => {
 }
 
 const onAcceptRematch = (socket) => {
-    socket.on("accept_rematch", async ({ gameID }) => {
+    socket.on(ACCEPT_REMATCH_EVENT, async ({ gameID }) => {
         const userID = socket.userID;
         const gameStored = await gameController.getGame(gameID)
         if (!gameStored) {
@@ -112,7 +113,7 @@ const onAcceptRematch = (socket) => {
 }
 
 const onMove = (socket) => {
-    socket.on("move", async ({ from, to, gameID }) => {
+    socket.on(MOVE_EVENT, async ({ from, to, gameID }) => {
         const opponentID = await gameController.getOpponentID(gameID, socket.userID);
 
         const isPlayerTurn = await gameController.isPlayerTurn(gameID, socket.userID)
@@ -126,7 +127,7 @@ const onMove = (socket) => {
 }
 
 const onCastleKing = (socket) => {
-    socket.on("castle_king", async ({ gameID, side }) => {
+    socket.on(CASTLE_KING_EVENT, async ({ gameID, side }) => {
         const opponentID = await gameController.getOpponentID(gameID, socket.userID)
         /*get game info and check turn */
         const isPlayerTurn = await gameController.isPlayerTurn(gameID, socket.userID)
@@ -140,7 +141,7 @@ const onCastleKing = (socket) => {
 }
 
 const onPawnPromotion = (socket) => {
-    socket.on("pawn_promotion", async ({ gameID, piece }) => {
+    socket.on(PAWN_PROMOTION_EVENT, async ({ gameID, piece }) => {
         const opponentID = await gameController.getOpponentID(gameID, socket.userID)
         await gameController.promotePawn(gameID, piece)
         await eventEmitter.emitPawnPromotion(opponentID, piece)
@@ -149,7 +150,7 @@ const onPawnPromotion = (socket) => {
 
 /* Ending Games*/
 const onClaimResign = (socket) => {
-    socket.on('resign', async ({ gameID }) => {
+    socket.on(RESIGN_EVENT, async ({ gameID }) => {
         await handleGameEnd(socket, { gameID, endedBy: endedBy.RESIGN }, true)
 
         return;
@@ -157,14 +158,14 @@ const onClaimResign = (socket) => {
 }
 
 const onClaimTimeOut = (socket) => {
-    socket.on('time_out', async ({ gameID }) => {
+    socket.on(TIME_OUT_EVENT, async ({ gameID }) => {
         await handleGameEnd(socket, { gameID, endedBy: endedBy.TIME_OUT }, true)
         return;
     })
 }
 
 const onClaimCheckMate = (socket) => {
-    socket.on('check_mate', async ({ gameID }) => {
+    socket.on(CHECK_MATE_EVENT, async ({ gameID }) => {
         try {
             await handleGameEnd(socket, { gameID, endedBy: endedBy.CHECK_MATE }, true)
             return;
@@ -175,21 +176,21 @@ const onClaimCheckMate = (socket) => {
 }
 
 const onClaimStealMate = (socket) => {
-    socket.on('steal_mate', async ({ gameID }) => {
+    socket.on(STEAL_MATE_EVENT, async ({ gameID }) => {
         await handleGameEnd(socket, { gameID, endedBy: endedBy.STEAL_MATE }, true)
         return;
     })
 }
 
 const onOfferDraw = (socket) => {
-    socket.on('offer_draw', async ({ gameID }) => {
+    socket.on(OFFER_DRAW_EVENT, async ({ gameID }) => {
         // await handleGameEnd(socket,{gameID,endedBy: endedBy.DRAW },true)
         return;
     })
 }
 
 const onLeaveGame = (socket) => {
-    socket.on('leave_game', async ({ gameID = '' }) => {
+    socket.on(LEAVE_GAME_EVENT, async ({ gameID = '' }) => {
         await handleGameEnd(socket, { gameID, endedBy: endedBy.LEAVE_OUT }, true)
         return;
     })

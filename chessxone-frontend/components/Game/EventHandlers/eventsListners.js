@@ -7,9 +7,10 @@ import {
     OPPONENT_MOVE_PIECE,
     GAME_NOT_AVAILABLE,
 } from '../../../store/game/actions';
+import { CASTLE_KING_EVENT, GAME_END_EVENT, GAME_START_EVENT, MOVE_EVENT, PAWN_PROMOTION_EVENT } from 'chessxone-shared/events';
 
 const gameStart = (dispatch) => {
-    membersSocket.on("game_start", ({
+    membersSocket.on(GAME_START_EVENT, ({
         gameID,
         blackUserName,
         whiteUserName,
@@ -32,31 +33,31 @@ const gameStart = (dispatch) => {
 }
 
 const gameNotAvailable = (dispatch) => {
-    membersSocket.on("game_not_available", () => {
+    membersSocket.on(GAME_NOT_AVAILABLE, () => {
         dispatch({ type: GAME_NOT_AVAILABLE })
     })
 }
 
 const gameEnd = (dispatch) => {
-    membersSocket.on("game_end", ({ endedBy, winner }) => {
+    membersSocket.on(GAME_END_EVENT, ({ endedBy, winner }) => {
         dispatch({ type: GAME_END, payload: { endedBy, winner } })
     })
 }
 
 const move = (dispatch) => {
-    membersSocket.on("move", ({ from, to }) => {
+    membersSocket.on(MOVE_EVENT, ({ from, to }) => {
         dispatch({ type: OPPONENT_MOVE_PIECE, payload: { from, to } })
     })
 }
 
 const pawnPromotion = (dispatch) => {
-    membersSocket.on("pawn_promotion", ({ piece }) => {
+    membersSocket.on(PAWN_PROMOTION_EVENT, ({ piece }) => {
         dispatch({ type: OPPONENT_PAWN_PROMOTION, payload: { piece } });
     })
 }
 
 const castleKing = (dispatch) => {
-    membersSocket.on("castle_king", ({ side }) => {
+    membersSocket.on(CASTLE_KING_EVENT, ({ side }) => {
         dispatch({ type: OPPONENT_CASTLING_KING, payload: { side } })
     })
 }

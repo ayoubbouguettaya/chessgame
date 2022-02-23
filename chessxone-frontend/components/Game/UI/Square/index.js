@@ -2,8 +2,9 @@ import React, { useContext, useCallback } from 'react'
 
 import { gameContext } from '../../../../store/game/context'
 import { SELECT_PIECE, MOVE_PIECE } from '../../../../store/game/actions';
-import { BLACK, EMPTY } from '../../gameLogic/constants'
-import * as eventEmitter from '../../gameLogic/eventEmitter'
+import * as eventEmitter from '../../EventHandlers/eventEmitter'
+
+import { BLACK, EMPTY} from 'chessxone-shared/constants'
 
 import styles from './square.module.css';
 

@@ -1,48 +1,18 @@
-import { getPiece } from "./utils";
-import { KING, WHITE, ROOK, EMPTY, QUEEN, BISHOP, kNIGHT, PAWN } from "./constants";
-import { movePiece, calculateAllowedSquares } from "./movesLogic";
+import { movePiece, calculateAllowedSquares } from "./moves";
+import { getPiece } from "../utils";
+import {
+    KING,
+    WHITE,
+    ROOK,
+    EMPTY,
+    QUEEN,
+    BISHOP,
+    kNIGHT,
+    PAWN
+} from "../constants";
+import { Board, Color, Square } from "../types";
 
-export const detectedCheck = ({ board, playerColor, kingSquare = null }) => {
-    /*xhen your opponant make a move and he checked your king */
-    let row, column;
-    if (kingSquare) {
-        /* to avoid search for king position when is done before on a loop for exemple */
-        row = kingSquare.row;
-        column = kingSquare.column
-    } else {
-        const { row: kingRow, column: kingColumn } = getKingPosition(board, playerColor);
-        row = kingRow;
-        column = kingColumn
-    }
-
-    /* going stright check for queen or hook*/
-    if (checkedStight({ board, playerColor, kingSquare: { row, column } })) {
-        return true;
-    }
-
-    /* going diagonaly check for bishop or queen */
-    if (checkedDiagonaly({ board, playerColor, kingSquare: { row, column } })) {
-        return true;
-    }
-
-    /* going L check for Knight */
-    if (checkedOnL({ board, playerColor, kingSquare: { row, column } })) {
-        return true;
-    }
-
-    /* going check for pawn */
-    if (checkedByPawn({ board, playerColor, kingSquare: { row, column } })) {
-        return true;
-    }
-    /* check by the King */
-    if (checkedByKing({ board, playerColor, kingSquare: { row, column } })) {
-        return true
-    }
-    /* going one step back diagonaly check for pawn */
-    return false;
-}
-
-export const checkForAnyLegalMove = ({ board, playerColor }) => {
+export const checkForAnyLegalMove = (board: Board, playerColor: Color) => {
     let allowedSquares, currentSquare;
     let currentRow = 0;
     let currentColumn = 0;
@@ -58,13 +28,13 @@ export const checkForAnyLegalMove = ({ board, playerColor }) => {
             currentSquare = getPiece(board, { row: currentRow, column: currentColumn })
             continue;
         }
-        allowedSquares = calculateAllowedSquares({
+        allowedSquares = calculateAllowedSquares(
             board,
             playerColor,
-            row: currentSquare.row,
-            column: currentSquare.column,
-            piece: currentSquare.piece,
-        });
+            currentSquare.row,
+            currentSquare.column,
+            currentSquare.piece || null,
+        );
         allowedSquares = filterCheckMoves(
             allowedSquares,
             {
@@ -92,8 +62,11 @@ export const checkForAnyLegalMove = ({ board, playerColor }) => {
     return false;
 }
 
-export const filterCheckMoves = (allowedSqaures, { board, playerColor, selectedSquare }) => {
-    let kingSquare = getKingPosition(board, playerColor)
+export const filterCheckMoves = (
+    allowedSqaures: Square[],
+    { board, playerColor, selectedSquare }: { board: Board, playerColor: Color, selectedSquare: Square }) => {
+
+    let kingSquare: Square | null = getKingPosition(board, playerColor)
 
     return allowedSqaures.filter((square) => {
         let tmpBoard = movePiece(board, selectedSquare, square);
@@ -101,21 +74,21 @@ export const filterCheckMoves = (allowedSqaures, { board, playerColor, selectedS
             kingSquare = square;
         }
 
-        if (!detectedCheck({ board: tmpBoard, playerColor, kingSquare })) {
+        if (!detectedCheck(tmpBoard, playerColor, kingSquare)) {
             return true;
         }
         return false;
     })
 }
 
-const checkedByKing = ({board,playerColor,kingSquare:{row,column}}) => {
+const checkedByKing = (board: Board, playerColor: Color, { row, column }: Square) => {
     const stepVariation = [-1, 0, 1];
     let nextSquare;
 
     for (let var1 of stepVariation) {
         for (let var2 of stepVariation) {
-            nextSquare = getPiece(board, {row,column}, var1, var2)
-            
+            nextSquare = getPiece(board, { row, column }, var1, var2)
+
             if (nextSquare && nextSquare.player !== playerColor && nextSquare.piece === KING) {
                 console.log('checked By king')
                 return true
@@ -126,7 +99,7 @@ const checkedByKing = ({board,playerColor,kingSquare:{row,column}}) => {
     return false;
 }
 
-const checkedByPawn = ({ board, playerColor, kingSquare: { row, column } }) => {
+const checkedByPawn = (board: Board, playerColor: Color, { row, column }: Square) => {
     const stepToPawn = (playerColor === WHITE) ? -1 : 1;
 
     const diagonaleLeftSquare = getPiece(board, { row, column }, stepToPawn, 1);
@@ -143,7 +116,7 @@ const checkedByPawn = ({ board, playerColor, kingSquare: { row, column } }) => {
     return false;
 }
 
-const checkedOnL = ({ board, playerColor, kingSquare: { row, column } }) => {
+const checkedOnL = (board: Board, playerColor: Color, { row, column }: Square) => {
     const stepVariation = [-1, 1];
     const stepVariation2 = [-2, 2]
     let squareToJump, squareToJump2;
@@ -167,7 +140,7 @@ const checkedOnL = ({ board, playerColor, kingSquare: { row, column } }) => {
     return false;
 }
 
-const checkedDiagonaly = ({ board, playerColor, kingSquare: { row, column } }) => {
+const checkedDiagonaly = (board: Board, playerColor: Color, { row, column }: Square) => {
     const stepVariation = [-1, 1];
     let step, nextSquare;
 
@@ -192,7 +165,7 @@ const checkedDiagonaly = ({ board, playerColor, kingSquare: { row, column } }) =
     return false;
 }
 
-const checkedStight = ({ board, playerColor, kingSquare: { row, column } }) => {
+const checkedStight = (board: Board, playerColor: Color, { row, column }: Square) => {
     const stepVariation = [-1, 1];
     const stepVariation2 = ["stepOnlyRow", "stepOnlyColumn"]
     let step, nextSquare;
@@ -226,7 +199,7 @@ const checkedStight = ({ board, playerColor, kingSquare: { row, column } }) => {
     return false;
 }
 
-export const getKingPosition = (board, playerColor) => {
+export const getKingPosition = (board: Board, playerColor: Color) => {
     let row, column, currentSquare;
     column = 0;
     row = (playerColor === WHITE) ? 7 : 0;
@@ -250,4 +223,51 @@ export const getKingPosition = (board, playerColor) => {
     }
 
     return currentSquare;
+}
+
+export const detectedCheck = (board: Board, playerColor: Color, kingSquare: Square | null = null) => {
+    /*xhen your opponant make a move and he checked your king */
+    let row, column;
+    let tmpCurrentSquare: Square | null;
+
+    if (kingSquare) {
+        /* to avoid search for king position when is done before on a loop for exemple */
+        row = kingSquare.row;
+        column = kingSquare.column
+    } else {
+        tmpCurrentSquare = getKingPosition(board, playerColor);
+        if (!tmpCurrentSquare) {
+            return false;
+        }
+
+        const { row: kingRow, column: kingColumn } = tmpCurrentSquare;
+        row = kingRow;
+        column = kingColumn
+    }
+
+    /* going stright check for queen or hook*/
+    if (checkedStight(board, playerColor, { row, column })) {
+        return true;
+    }
+
+    /* going diagonaly check for bishop or queen */
+    if (checkedDiagonaly(board, playerColor, { row, column })) {
+        return true;
+    }
+
+    /* going L check for Knight */
+    if (checkedOnL(board, playerColor, { row, column })) {
+        return true;
+    }
+
+    /* going check for pawn */
+    if (checkedByPawn(board, playerColor, { row, column })) {
+        return true;
+    }
+    /* check by the King */
+    if (checkedByKing(board, playerColor, { row, column })) {
+        return true
+    }
+    /* going one step back diagonaly check for pawn */
+    return false;
 }

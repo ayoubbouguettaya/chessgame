@@ -3,14 +3,16 @@ import { gameContext } from '../../../../store/game/context'
 
 import styles from './board.module.css'
 import Square from '../Square';
-import { BLACK, rowNotation, columnNotation, gameStatus } from '../../gameLogic/constants';
+import { BLACK, rowNotation, columnNotation } from 'chessxone-shared/constants';
+import { GameStatus } from 'chessxone-shared/types';
+
 
 const Board = () => {
-    const { state: { board,status,playerColor } } = useContext(gameContext);
+    const { state: { board, status, playerColor } } = useContext(gameContext);
     const rotateBoard = playerColor === BLACK;
 
     return (
-        <div className={`${styles.board_container} ${status === gameStatus.ended ? styles.disabled : ''}`}>
+        <div className={`${styles.board_container} ${status === GameStatus.ended ? styles.disabled : ''}`}>
             <div className={`${rotateBoard ? styles.rotate : ''} ${styles.vertical_notation}`}>
                 {rowNotation.map((index) => (<span key={index}> {index}</span>))}
             </div>
@@ -18,7 +20,7 @@ const Board = () => {
                 <div className={`${rotateBoard ? styles.rotate : ''} ${styles.board}`} >
                     {board.map((row) => {
                         return (row.map((square) => (
-                            <Square  key={`${square.row}-${square.column}`} data={square} />
+                            <Square key={`${square.row}-${square.column}`} data={square} />
                         )))
                     })}
                 </div>
