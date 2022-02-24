@@ -71,6 +71,7 @@ exports.add = async (req, res, next) => {
         if (user) {
             return res.status(403).send("user Already existe")
         }
+
         const tagID = await generateNewTagID();
 
         const newUser = await User.create({

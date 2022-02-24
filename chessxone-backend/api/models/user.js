@@ -11,7 +11,7 @@ const userSchema = new Schema({
         type: String,
     },
     tagID: {
-        type: Number,
+        type: String,
         required: true,
         unique: true,
     },
