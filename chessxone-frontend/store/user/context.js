@@ -6,7 +6,7 @@ import fetchUser from '../../utils/fetchUser';
 const initialValues = {
     user: { _id: undefined},
     connectedFriends: [],
-    userGameInvitations: [],
+    inComingMatchRequests: [],
     outGoingMatchRequest: null,
     hasSignedUp: false,
     hasLoggedIn: false,

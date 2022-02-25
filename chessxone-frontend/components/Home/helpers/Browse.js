@@ -12,7 +12,7 @@ const Browse = ({ userID }) => {
         dispatch,
         state: {
             outGoingMatchRequest,
-            userGameInvitations,
+            inComingMatchRequests,
             connectedFriends,
         } } = useContext(userContext);
 
@@ -25,7 +25,7 @@ const Browse = ({ userID }) => {
                     lastConnectedUsers.filter(
                         (connectionID) =>
                             connectionID !== userID &&
-                            !userGameInvitations.includes(connectionID)
+                            !inComingMatchRequests.includes(connectionID)
                     ))
 
             } catch (error) {
@@ -33,7 +33,7 @@ const Browse = ({ userID }) => {
         }
 
         fetchFeed()
-    }, [userGameInvitations])
+    }, [inComingMatchRequests])
 
 
     const handleRequestGame = async (playerID) => {
