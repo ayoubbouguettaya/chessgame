@@ -5,6 +5,7 @@ const { notify } = require("../notify");
 
 const redisCommand = require('../../utils/redisCommand');
 const { generateNewTagID } = require('../../utils');
+const { LAST_CONNECTED_USERS } = require('../../utils/redisKeys');
 
 exports.getCurrent = async (req, res, next) => {
     try {
@@ -247,12 +248,8 @@ exports.getOnlineConnections = async (req, res, next) => {
 exports.getFeed = async (req, res, next) => {
     try {
         const { userID } = req.params;
-
-        const userInfo = await User.findById(userID, 'connections').lean()
-
-        let connections = [];
-        if (userInfo) { connections = userInfo.connections; }
-        const lastConnectedUsers = await redisCommand.srandmember('LAST_CONNECTED_USERS', 20)
+        const lastConnectedUsers = await redisCommand.srandmember(LAST_CONNECTED_USERS, 20)
+        
         res.send(lastConnectedUsers)
         return;
     } catch (error) {
