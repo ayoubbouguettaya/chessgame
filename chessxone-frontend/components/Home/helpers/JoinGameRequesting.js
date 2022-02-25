@@ -5,7 +5,7 @@ import styles from '../home.module.css'
 import fetchApi from '../../../utils/apiFetch';
 import { userContext } from '../../../store/user/context';
 import Skeleton from '../../UI/Skeleton';
-import { REMOVE_INCOMING_MATCH_REQUES, SET_INCOMING_MATCH_REQUESS } from '../../../store/user/actions';
+import { REMOVE_INCOMING_MATCH_REQUEST, SET_INCOMING_MATCH_REQUESTS } from '../../../store/user/actions';
 import useCounterDisplay from '../../hook/useCounterDisplay';
 
 const JoinGameRequesting = () => {
@@ -14,7 +14,7 @@ const JoinGameRequesting = () => {
     const getInComingMatchRequests = async () => {
         try {
             const { data } = await fetchApi.get({ url: `/matchs/${userID}/incoming` })
-            dispatch({ type: SET_INCOMING_MATCH_REQUESS, payload: { inComingMatchRequests: data } })
+            dispatch({ type: SET_INCOMING_MATCH_REQUESTS, payload: { inComingMatchRequests: data } })
         } catch (error) {
             throw new Error('get games invitations failed')
         } finally {
@@ -41,7 +41,7 @@ const JoinGameRequesting = () => {
     const declineGame = async (opponentID) => {
         try {
             await fetchApi.put({ url: `/matchs/${userID}/decline`, data: { userID: opponentID } });
-            dispatch({ type: REMOVE_INCOMING_MATCH_REQUES, payload: { _id: opponentID } })
+            dispatch({ type: REMOVE_INCOMING_MATCH_REQUEST, payload: { _id: opponentID } })
         } catch (error) {
             throw new Error('decline game failed')
         } finally {
