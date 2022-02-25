@@ -6,7 +6,7 @@ import styles from '../home.module.css'
 import { USER_GAME_REQUEST_SUCCESS, SET_CONNECTED_FRIEND } from '../../../store/user/actions'
 
 const OnlineFriends = () => {
-    const { dispatch, state: { userGameRequest, userGameInvitations, connectedFriends, user: { _id: userID } } } = useContext(userContext)
+    const { dispatch, state: { outGoingMatchRequest, userGameInvitations, connectedFriends, user: { _id: userID } } } = useContext(userContext)
     const [isLoadingData,setIsLoadingData] = useState(false);
 
     const handleInviteFriendSuccess = (friendData) => {
@@ -55,7 +55,7 @@ const OnlineFriends = () => {
                                     friendID={friendData._id}
                                     isPlaying={friendData.isPlaying}
                                     isLocked={friendData.isLocked}
-                                    alreadyRequested={userGameRequest && userGameRequest._id === friendData._id}
+                                    alreadyRequested={outGoingMatchRequest && outGoingMatchRequest._id === friendData._id}
                                     isRequesting={userGameInvitations.includes(friendData._id)}
                                 />
                             </div>

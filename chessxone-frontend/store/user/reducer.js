@@ -8,7 +8,7 @@ import {
     DONE,
 
     SET_CONNECTED_FRIEND,
-    SET_USER_GAME_REQUEST,
+    SET_OUTGOING_MATCH_REQUEST,
     SET_USER_GAME_INVITATIONS,
     SET_CONNECTIONS_REQUEST,
 
@@ -22,7 +22,7 @@ import {
     NEW_GAME_READY,
 
     CLEAR_TAB_NOTIFICATION,
-    REMOVE_USER_GAME_REQUEST,
+    REMOVE_OUTGOING_MATCH_REQUEST,
     REMOVE_USER_GAME_INVITATION,
     SESSION_SUCCESS
 } from './actions';
@@ -61,10 +61,10 @@ const globalReducer = (state, action) => {
             return { ...state, connectedFriends }
         }
 
-        case SET_USER_GAME_REQUEST: {
-            const { userGameRequest } = action.payload;
+        case SET_OUTGOING_MATCH_REQUEST: {
+            const { outGoingMatchRequest } = action.payload;
 
-            return { ...state, userGameRequest }
+            return { ...state, outGoingMatchRequest }
         }
 
         case SET_USER_GAME_INVITATIONS: {
@@ -115,10 +115,10 @@ const globalReducer = (state, action) => {
 
         case USER_GAME_REQUEST_SUCCESS: {
             const { _id, userName, picture, tagID } = action.payload;
-            const newUserGameRequest = { _id, userName, picture, tagID ,issuedXXSecondsAgo: 1};
+            const newOutGoingMatchRequest = { _id, userName, picture, tagID ,issuedXXSecondsAgo: 1};
             const { notificationTab } = state;
             notificationTab.push('LOBBY')
-            return { ...state, userGameRequest: newUserGameRequest, notificationTab: [...notificationTab] }
+            return { ...state, outGoingMatchRequest: newOutGoingMatchRequest, notificationTab: [...notificationTab] }
         }
 
         case ADD_NEW_USER_GAME_INVITATION: {
@@ -209,13 +209,13 @@ const globalReducer = (state, action) => {
             return {
                 ...state,
                 notificationTab: [...notificationTab],
-                userGameRequest: null,
+                outGoingMatchRequest: null,
                 userGameInvitations: []
             }
         }
 
-        case REMOVE_USER_GAME_REQUEST: {
-            return { ...state, userGameRequest: undefined }
+        case REMOVE_OUTGOING_MATCH_REQUEST: {
+            return { ...state, outGoingMatchRequest: undefined }
         }
 
         case REMOVE_USER_GAME_INVITATION: {

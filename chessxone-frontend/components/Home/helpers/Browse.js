@@ -11,7 +11,7 @@ const Browse = ({ userID }) => {
     const {
         dispatch,
         state: {
-            userGameRequest,
+            outGoingMatchRequest,
             userGameInvitations,
             connectedFriends,
         } } = useContext(userContext);
@@ -56,7 +56,7 @@ const Browse = ({ userID }) => {
      he can't invite another player similtusly
     */
 
-    if (userGameRequest) {
+    if (outGoingMatchRequest) {
         return (<div />)
     }
 

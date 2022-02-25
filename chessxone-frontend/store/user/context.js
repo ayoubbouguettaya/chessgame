@@ -7,7 +7,7 @@ const initialValues = {
     user: { _id: undefined},
     connectedFriends: [],
     userGameInvitations: [],
-    userGameRequest: null,
+    outGoingMatchRequest: null,
     hasSignedUp: false,
     hasLoggedIn: false,
     isLoading: true,
