@@ -39,7 +39,7 @@ exports.updateConnectionStatus = async (userID, connection) => {
     }
 }
 
-exports.gameRequestDeclined = async (hosterID, guestID) => {
+exports.outGoingMatchRequestDeclined = async (hosterID, guestID) => {
     try {
         await io.to(hosterID).emit(OUTGOING_MATCH_REQUEST_DECLINED_EVENT, { guestID });
     } catch (error) {
@@ -47,19 +47,9 @@ exports.gameRequestDeclined = async (hosterID, guestID) => {
     }
 }
 
-exports.newGameInvitation = async (userID, opponentID) => {
+exports.newIncomingMatchRequest = async (userID, opponentID) => {
     try {
         await io.to(userID).emit(NEW_INCOMING_MATCH_REQUEST_EVENT, { _id: opponentID });
-        return;
-    } catch (error) {
-        return error;
-    }
-}
-// todo: MUST BE REMOVED PROPERLY :DEPRECTED // USELESS
-exports.requestGameCancled = async (friendID, userID) => {
-    try {
-        // await io.to(friendID).emit("request_game_cancled", { _id: userID });
-        throw new Error("deprecated: request game canceld")
         return;
     } catch (error) {
         return error;
