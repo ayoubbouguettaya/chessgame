@@ -27,10 +27,6 @@ const AddFriend = () => {
                 setError('expect 7 digits')
                 return;
             }
-            if (isNaN(tagID)) {
-                setError('wrong format')
-                return;
-            }
 
             const { data } = await apiFetch.get({ url: `/users/byTagID/${tagID}` })
             setUser(data);
