@@ -88,7 +88,7 @@ const FriendRequestingItem = ({ opponentID, joinGame, declineGame }) => {
 
     const handleDeclineGame = async () => {
         setIsDeclineLoading(true)
-        await declineGame(); 
+        await declineGame();
         setIsDeclineLoading(false)
     }
 

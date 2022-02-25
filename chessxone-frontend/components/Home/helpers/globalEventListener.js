@@ -25,8 +25,8 @@ const initiliseGlobalEventListners = (dispatch) => {
     //     dispatch({ type: USER_GAME_REQUEST_CANCLED, payload: data })
     // })
 
-    membersSocket.on(OUTGOING_MATCH_REQUEST_DECLINED_EVENT,()=>{
-        dispatch({type: REMOVE_OUTGOING_MATCH_REQUEST});
+    membersSocket.on(OUTGOING_MATCH_REQUEST_DECLINED_EVENT, () => {
+        dispatch({ type: REMOVE_OUTGOING_MATCH_REQUEST });
     })
 
     membersSocket.on(NEW_CONNECTION_REQUEST_EVENT, async (data) => {

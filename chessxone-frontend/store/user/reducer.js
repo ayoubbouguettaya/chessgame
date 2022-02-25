@@ -9,7 +9,7 @@ import {
 
     SET_CONNECTED_FRIEND,
     SET_OUTGOING_MATCH_REQUEST,
-    SET_INCOMING_MATCH_REQUESS,
+    SET_INCOMING_MATCH_REQUESTS,
     SET_CONNECTIONS_REQUEST,
 
     FRIEND_STATUS_CHANGED,
@@ -23,7 +23,7 @@ import {
 
     CLEAR_TAB_NOTIFICATION,
     REMOVE_OUTGOING_MATCH_REQUEST,
-    REMOVE_INCOMING_MATCH_REQUES,
+    REMOVE_INCOMING_MATCH_REQUEST,
     SESSION_SUCCESS
 } from './actions';
 
@@ -53,8 +53,8 @@ const globalReducer = (state, action) => {
             return { ...state, error: { code, message } };
         }
 
-        case SESSION_SUCCESS : {
-            return {...state, isConnected: true}
+        case SESSION_SUCCESS: {
+            return { ...state, isConnected: true }
         }
         case SET_CONNECTED_FRIEND: {
             const { connectedFriends } = action.payload;
@@ -67,7 +67,7 @@ const globalReducer = (state, action) => {
             return { ...state, outGoingMatchRequest }
         }
 
-        case SET_INCOMING_MATCH_REQUESS: {
+        case SET_INCOMING_MATCH_REQUESTS: {
             const { inComingMatchRequests } = action.payload;
 
             return { ...state, inComingMatchRequests }
@@ -115,7 +115,7 @@ const globalReducer = (state, action) => {
 
         case USER_GAME_REQUEST_SUCCESS: {
             const { _id, userName, picture, tagID } = action.payload;
-            const newOutGoingMatchRequest = { _id, userName, picture, tagID ,issuedXXSecondsAgo: 1};
+            const newOutGoingMatchRequest = { _id, userName, picture, tagID, issuedXXSecondsAgo: 1 };
             const { notificationTab } = state;
             notificationTab.push('LOBBY')
             return { ...state, outGoingMatchRequest: newOutGoingMatchRequest, notificationTab: [...notificationTab] }
@@ -162,7 +162,7 @@ const globalReducer = (state, action) => {
             notificationTab.push('CONNECTION')
 
             const index = incomingRequests ? incomingRequests.findIndex((ele) => (ele._id === _id)) : -1;
-           console.log(incomingRequests,index)
+            console.log(incomingRequests, index)
             if (index === -1) {
                 incomingRequests.push({ _id, picture, tagID, userName });
             }
@@ -218,7 +218,7 @@ const globalReducer = (state, action) => {
             return { ...state, outGoingMatchRequest: undefined }
         }
 
-        case REMOVE_INCOMING_MATCH_REQUES: {
+        case REMOVE_INCOMING_MATCH_REQUEST: {
             const { _id } = action.payload;
             const { inComingMatchRequests, connectedFriends } = state;
 
@@ -244,7 +244,7 @@ const globalReducer = (state, action) => {
             const { notificationTab } = state;
             const { Event } = action.payload;
 
-            const newNotificationTab =  notificationTab.filter((ele) => ele !== Event)
+            const newNotificationTab = notificationTab.filter((ele) => ele !== Event)
 
             return { ...state, notificationTab: [...newNotificationTab] }
         }

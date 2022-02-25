@@ -1,4 +1,4 @@
-import { useContext, useState,useEffect } from 'react'
+import { useContext, useState, useEffect } from 'react'
 
 import { userContext } from '../../../store/user/context'
 import apiFetch from '../../../utils/apiFetch'
@@ -7,15 +7,15 @@ import { USER_GAME_REQUEST_SUCCESS, SET_CONNECTED_FRIEND } from '../../../store/
 
 const OnlineFriends = () => {
     const { dispatch, state: { outGoingMatchRequest, inComingMatchRequests, connectedFriends, user: { _id: userID } } } = useContext(userContext)
-    const [isLoadingData,setIsLoadingData] = useState(false);
+    const [isLoadingData, setIsLoadingData] = useState(false);
 
     const handleInviteFriendSuccess = (friendData) => {
         dispatch({ type: USER_GAME_REQUEST_SUCCESS, payload: friendData })
     }
 
-    useEffect(()=> {
+    useEffect(() => {
         fetchOnlineConnections();
-    },[]);
+    }, []);
 
     const fetchOnlineConnections = async () => {
         try {
@@ -25,7 +25,7 @@ const OnlineFriends = () => {
             dispatch({ type: SET_CONNECTED_FRIEND, payload: { connectedFriends: data } })
         } catch (error) {
 
-        }finally{
+        } finally {
             setIsLoadingData(false)
         }
     }
@@ -91,30 +91,30 @@ const FriendStatus = ({ handleInviteFriendSuccess, userID, friendID, isPlaying, 
                 {alreadyRequested ? (
                     <button className={styles.secondary}>Requested</button>
                 ) : (
-                        <button
-                            className={styles.secondary}
-                            onClick={() => handleInviteFriend(friendID)}
-                            disabled={isLoading}
-                        >
-                            Play
-                            {isLoading && (<img src="/icon/loader.svg" />)}
-                        </button>
-                    )}
+                    <button
+                        className={styles.secondary}
+                        onClick={() => handleInviteFriend(friendID)}
+                        disabled={isLoading}
+                    >
+                        Play
+                        {isLoading && (<img src="/icon/loader.svg" />)}
+                    </button>
+                )}
             </>
         ) : (
-                <div style={{ display: 'flex' }}>
-                    {!isLocked ? (
-                        <>
-                            <img src="/icon/gamepad.png" height="25" width="25" />
-                            <p><small> is playing</small></p>
-                        </>
-                    ) : (
-                            <>
-                                <img src="/icon/lock.svg" height="18" width="18" />
-                                <p><small>{isRequesting ? 'Request you' : 'Not available'} </small></p>
-                            </>
-                        )}
-                </div>
-            )
+            <div style={{ display: 'flex' }}>
+                {!isLocked ? (
+                    <>
+                        <img src="/icon/gamepad.png" height="25" width="25" />
+                        <p><small> is playing</small></p>
+                    </>
+                ) : (
+                    <>
+                        <img src="/icon/lock.svg" height="18" width="18" />
+                        <p><small>{isRequesting ? 'Request you' : 'Not available'} </small></p>
+                    </>
+                )}
+            </div>
+        )
     )
 }
