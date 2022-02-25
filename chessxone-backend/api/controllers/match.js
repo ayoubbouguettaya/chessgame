@@ -59,19 +59,19 @@ exports.requestGame = async (req, res, next) => {
         await InComingMatchReq.push(opponentID, userID)
         await UserOnHotAccess.setIsLocked(userID, true);
 
-        const playerToNotifyGameCancled = await InComingMatchReq.get(userID)
-
-        if (playerToNotifyGameCancled) {
+        const playersToNotify = await InComingMatchReq.get(userID)
+        /* notfiy player who request the user ie incoming match request*/
+        if (playersToNotify) {
             InComingMatchReq.clear(userID)
 
-            for (let playerToNotify of playerToNotifyGameCancled) {
+            for (let playerToNotify of playersToNotify) {
                 await OutGoingMatchReq.clear(playerToNotify)
             }
 
-            await notifyAll.requestGameCancled(playerToNotifyGameCancled, userID)
+            await notifyAll.outGoingMatchRequestDeclined(playersToNotify, userID)
         }
 
-        await notify.newGameInvitation(opponentID, userID);
+        await notify.newIncomingMatchRequest(opponentID, userID);
 
         return res.sendStatus(200);
     } catch (error) {
@@ -91,16 +91,16 @@ exports.acceptGame = async (req, res, next) => {
         await OutGoingMatchReq.clear(opponentID)
         await UserOnHotAccess.setIsLocked(userID, true);
 
-        const playerToNotifyGameCancled = await InComingMatchReq.get(userID)
+        const playersToNotifyGameCancled = await InComingMatchReq.get(userID)
 
-        if (playerToNotifyGameCancled) {
+        if (playersToNotifyGameCancled) {
             InComingMatchReq.clear(userID)
 
-            for (let playerToNotify of playerToNotifyGameCancled) {
+            for (let playerToNotify of playersToNotifyGameCancled) {
                 await OutGoingMatchReq.clear(playerToNotify)
             }
 
-            await notifyAll.requestGameCancled(playerToNotifyGameCancled, userID)
+            await notifyAll.outGoingMatchRequestDeclined(playersToNotifyGameCancled, userID)
         }
         /* Create the game*/
         /* -----------------------Create a game and Notify---------------------------------------------*/
@@ -128,7 +128,7 @@ exports.declineGame = async (req, res, next) => {
         await OutGoingMatchReq.clear(opponentID)
         await InComingMatchReq.pull(userID, opponentID)
 
-        await notify.gameRequestDeclined(opponentID, userID)
+        await notify.outGoingMatchRequestDeclined(opponentID, userID)
 
         return res.sendStatus(200);
 

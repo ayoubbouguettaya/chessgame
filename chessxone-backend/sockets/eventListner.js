@@ -14,7 +14,6 @@ const onConnexion = async (socket) => {
         socket.userData = await userController.connect(socket.userID)
         const connectedFriends = await userController.getOnlineConnections(socket.userID);
 
-
         await eventEmitter.nofityAllconnectedFriends(connectedFriends, socket.userData);
         await eventEmitter.emitSession(socket.userID);
 
@@ -26,20 +25,23 @@ const onConnexion = async (socket) => {
 
 const onDisconnect = async (socket) => {
     socket.on("disconnect", async () => {
-        const socketsInUserIDRoom = await io.in(socket.userID).allSockets();
-        if (socketsInUserIDRoom.size === 0) {
-            await userController.disconnect(socket.userID)
+        try {
+            const socketsInUserIDRoom = await io.in(socket.userID).allSockets();
+            if (socketsInUserIDRoom.size === 0) {
+                await userController.disconnect(socket.userID)
 
-            const connectedFriends = await userController.getOnlineConnections(socket.userID)
+                const connectedFriends = await userController.getOnlineConnections(socket.userID)
 
-            await eventEmitter.nofityAllconnectedFriends(connectedFriends, { _id: socket.userID, isConnected: false });
+                await eventEmitter.nofityAllconnectedFriends(connectedFriends, { _id: socket.userID, isConnected: false });
 
-            const currentGameID = socket.userData.gameID || '';
+                const currentGameID = socket.userData.gameID || '';
 
-            if (currentGameID) {
-                await handleGameEnd(socket, { gameID: currentGameID, endedBy: endedBy.TIME_OUT })
+                if (currentGameID) {
+                    await handleGameEnd(socket, { gameID: currentGameID, endedBy: endedBy.TIME_OUT })
+                }
             }
-
+        } catch (error) {
+            console.log(error)
         }
     });
 }

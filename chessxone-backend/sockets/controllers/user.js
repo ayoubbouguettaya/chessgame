@@ -6,7 +6,6 @@ const { LAST_CONNECTED_USERS } = require('../../utils/redisKeys');
 
 const connect = async (userID) => {
     try {
-
         const userInfo = await User.findById(userID, 'userName tagID picture').lean();
         const lastTimeConnected = new Date();
         const dataToStore = {
@@ -19,7 +18,7 @@ const connect = async (userID) => {
         };
 
         await UserOnHotAccess.set(userID, dataToStore)
-        await redisCommand.sadd(LAST_CONNECTED_USERS, socket.userID)
+        await redisCommand.sadd(LAST_CONNECTED_USERS, userID)
 
         return dataToStore;
     } catch (error) {
