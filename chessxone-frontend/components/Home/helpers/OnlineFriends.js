@@ -3,14 +3,14 @@ import { useContext, useState, useEffect } from 'react'
 import { userContext } from '../../../store/user/context'
 import apiFetch from '../../../utils/apiFetch'
 import styles from '../home.module.css'
-import { USER_GAME_REQUEST_SUCCESS, SET_CONNECTED_FRIEND } from '../../../store/user/actions'
+import { OUTGOING_MATCH_REQUEST_SUCCESS, SET_CONNECTED_FRIEND } from '../../../store/user/actions'
 
 const OnlineFriends = () => {
     const { dispatch, state: { outGoingMatchRequest, inComingMatchRequests, connectedFriends, user: { _id: userID } } } = useContext(userContext)
     const [isLoadingData, setIsLoadingData] = useState(false);
 
     const handleInviteFriendSuccess = (friendData) => {
-        dispatch({ type: USER_GAME_REQUEST_SUCCESS, payload: friendData })
+        dispatch({ type: OUTGOING_MATCH_REQUEST_SUCCESS, payload: friendData })
     }
 
     useEffect(() => {

@@ -4,7 +4,7 @@ import styles from '../home.module.css';
 import fetchApi from '../../../utils/apiFetch'
 import Skeleton from '../../UI/Skeleton';
 import { userContext } from '../../../store/user/context';
-import { USER_GAME_REQUEST_SUCCESS } from '../../../store/user/actions';
+import { OUTGOING_MATCH_REQUEST_SUCCESS } from '../../../store/user/actions';
 
 const Browse = ({ userID }) => {
     const [suggestedUsersId, setSuggestedUsersId] = useState([]);
@@ -47,7 +47,7 @@ const Browse = ({ userID }) => {
     }
 
     const handleRequestGameSuccess = (opponentData) => {
-        dispatch({ type: USER_GAME_REQUEST_SUCCESS, payload: opponentData });
+        dispatch({ type: OUTGOING_MATCH_REQUEST_SUCCESS, payload: opponentData });
 
     }
 

@@ -18,7 +18,7 @@ import {
     ADD_NEW_FRIEND,
 
     ADD_NEW_INCOMING_MATCH_REQUES,
-    USER_GAME_REQUEST_SUCCESS,
+    OUTGOING_MATCH_REQUEST_SUCCESS,
     NEW_GAME_READY,
 
     CLEAR_TAB_NOTIFICATION,
@@ -113,7 +113,7 @@ const globalReducer = (state, action) => {
             }
         }
 
-        case USER_GAME_REQUEST_SUCCESS: {
+        case OUTGOING_MATCH_REQUEST_SUCCESS: {
             const { _id, userName, picture, tagID } = action.payload;
             const newOutGoingMatchRequest = { _id, userName, picture, tagID, issuedXXSecondsAgo: 1 };
             const { notificationTab } = state;
