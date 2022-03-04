@@ -24,7 +24,8 @@ import {
     CLEAR_TAB_NOTIFICATION,
     REMOVE_OUTGOING_MATCH_REQUEST,
     REMOVE_INCOMING_MATCH_REQUEST,
-    SESSION_SUCCESS
+    SESSION_SUCCESS,
+    ADD_NEW_INCOMING_MATCH_REQUEST
 } from './actions';
 
 const globalReducer = (state, action) => {
@@ -121,7 +122,7 @@ const globalReducer = (state, action) => {
             return { ...state, outGoingMatchRequest: newOutGoingMatchRequest, notificationTab: [...notificationTab] }
         }
 
-        case ADD_NEW_INCOMING_MATCH_REQUES: {
+        case ADD_NEW_INCOMING_MATCH_REQUEST: {
             const { _id } = action.payload;
             const { inComingMatchRequests, connectedFriends, notificationTab } = state;
             notificationTab.push('LOBBY')
@@ -151,7 +152,7 @@ const globalReducer = (state, action) => {
 
             return {
                 ...state,
-                outgoingRequests,
+                outgoingRequests: [...outgoingRequests],
                 notificationTab: [...notificationTab]
             };
         }
@@ -197,8 +198,8 @@ const globalReducer = (state, action) => {
             return {
                 ...state,
                 connectedFriends: [...connectedFriends],
-                outgoingRequests,
-                incomingRequests,
+                outgoingRequests: [...outgoingRequests],
+                incomingRequests: [incomingRequests],
                 notificationTab: [...notificationTab]
             };
         }

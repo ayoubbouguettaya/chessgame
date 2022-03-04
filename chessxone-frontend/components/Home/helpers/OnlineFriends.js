@@ -21,7 +21,6 @@ const OnlineFriends = () => {
         try {
             setIsLoadingData(true)
             const { data } = await apiFetch.get({ url: `/users/${userID}/connection/online` })
-            console.log(data)
             dispatch({ type: SET_CONNECTED_FRIEND, payload: { connectedFriends: data } })
         } catch (error) {
 
@@ -85,6 +84,7 @@ const FriendStatus = ({ handleInviteFriendSuccess, userID, friendID, isPlaying, 
             setIsLoading(false)
         }
     }
+    
     return (
         !isLocked && !isPlaying ? (
             <>
