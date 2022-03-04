@@ -75,7 +75,7 @@ const globalReducer = (state, action) => {
 
         case SET_CONNECTIONS_REQUEST: {
             const { outgoingRequests, incomingRequests } = action.payload;
-            return { ...state, user: { ...state.user, outgoingRequests, incomingRequests } }
+            return { ...state, incomingRequests, outgoingRequests }
         }
 
         case FRIEND_STATUS_CHANGED: {
@@ -145,20 +145,20 @@ const globalReducer = (state, action) => {
 
         case REQUEST_CONNECTION_SUCCESS: {
             const { _id, picture, tagID, userName } = action.payload;
-            const { user, user: { outgoingRequests }, notificationTab } = state;
+            const { outgoingRequests, notificationTab } = state;
             outgoingRequests.push({ _id, picture, tagID, userName });
             notificationTab.push('CONNECTION')
 
             return {
                 ...state,
-                user: { ...user, outgoingRequests },
+                outgoingRequests,
                 notificationTab: [...notificationTab]
             };
         }
 
         case ADD_NEW_REQUEST_CONNECTION: {
             const { _id, picture, tagID, userName } = action.payload;
-            const { user, user: { incomingRequests }, notificationTab } = state;
+            const { incomingRequests, notificationTab } = state;
             notificationTab.push('CONNECTION')
 
             const index = incomingRequests ? incomingRequests.findIndex((ele) => (ele._id === _id)) : -1;
@@ -169,14 +169,14 @@ const globalReducer = (state, action) => {
 
             return {
                 ...state,
-                user: { ...user, incomingRequests: [...incomingRequests] },
+                incomingRequests: [...incomingRequests],
                 notificationTab: [...notificationTab]
             };
         }
 
         case ADD_NEW_FRIEND: {
             const { _id, userName, tagID, picture, isLocked = false, isPlaying = false, isConnected = false } = action.payload;
-            const { user, user: { incomingRequests, outgoingRequests }, connectedFriends, notificationTab } = state;
+            const { incomingRequests, outgoingRequests, connectedFriends, notificationTab } = state;
             notificationTab.push('FRIEND')
 
             const friendFound = connectedFriends ? connectedFriends.findIndex((ele) => (ele._id === _id)) : -1;
@@ -197,7 +197,8 @@ const globalReducer = (state, action) => {
             return {
                 ...state,
                 connectedFriends: [...connectedFriends],
-                user: { ...user, incomingRequests, outgoingRequests },
+                outgoingRequests,
+                incomingRequests,
                 notificationTab: [...notificationTab]
             };
         }

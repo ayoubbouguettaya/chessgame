@@ -5,6 +5,8 @@ import fetchUser from '../../utils/fetchUser';
 
 const initialValues = {
     user: { _id: undefined},
+    outgoingRequests: [],
+    incomingRequests: [],
     connectedFriends: [],
     inComingMatchRequests: [],
     outGoingMatchRequest: null,

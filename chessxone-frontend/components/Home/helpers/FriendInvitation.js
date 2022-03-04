@@ -7,7 +7,7 @@ import Loading from '../../UI/Loading';
 import { SET_CONNECTIONS_REQUEST,REQUEST_CONNECTION_SUCCESS } from '../../../store/user/actions';
 
 const FriendInvitation = () => {
-    const { dispatch,state: { user: { _id: userID, incomingRequests, outgoingRequests } } } = useContext(userContext);
+    const { dispatch,state: { user: { _id: userID  },incomingRequests ,outgoingRequests} } = useContext(userContext);
 
     const [activeTab, setActiveTab] = useState('REQUESTS_TAB')
     const [isLoading, setIsLoading] = useState(false);
