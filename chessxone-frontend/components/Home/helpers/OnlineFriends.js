@@ -1,31 +1,30 @@
-import { useContext, useState,useEffect } from 'react'
+import { useContext, useState, useEffect } from 'react'
 
 import { userContext } from '../../../store/user/context'
 import apiFetch from '../../../utils/apiFetch'
 import styles from '../home.module.css'
-import { USER_GAME_REQUEST_SUCCESS, SET_CONNECTED_FRIEND } from '../../../store/user/actions'
+import { OUTGOING_MATCH_REQUEST_SUCCESS, SET_CONNECTED_FRIEND } from '../../../store/user/actions'
 
 const OnlineFriends = () => {
-    const { dispatch, state: { userGameRequest, userGameInvitations, connectedFriends, user: { _id: userID } } } = useContext(userContext)
-    const [isLoadingData,setIsLoadingData] = useState(false);
+    const { dispatch, state: { outGoingMatchRequest, inComingMatchRequests, connectedFriends, user: { _id: userID } } } = useContext(userContext)
+    const [isLoadingData, setIsLoadingData] = useState(false);
 
     const handleInviteFriendSuccess = (friendData) => {
-        dispatch({ type: USER_GAME_REQUEST_SUCCESS, payload: friendData })
+        dispatch({ type: OUTGOING_MATCH_REQUEST_SUCCESS, payload: friendData })
     }
 
-    useEffect(()=> {
+    useEffect(() => {
         fetchOnlineConnections();
-    },[]);
+    }, []);
 
     const fetchOnlineConnections = async () => {
         try {
             setIsLoadingData(true)
             const { data } = await apiFetch.get({ url: `/users/${userID}/connection/online` })
-            console.log(data)
             dispatch({ type: SET_CONNECTED_FRIEND, payload: { connectedFriends: data } })
         } catch (error) {
 
-        }finally{
+        } finally {
             setIsLoadingData(false)
         }
     }
@@ -55,8 +54,8 @@ const OnlineFriends = () => {
                                     friendID={friendData._id}
                                     isPlaying={friendData.isPlaying}
                                     isLocked={friendData.isLocked}
-                                    alreadyRequested={userGameRequest && userGameRequest._id === friendData._id}
-                                    isRequesting={userGameInvitations.includes(friendData._id)}
+                                    alreadyRequested={outGoingMatchRequest && outGoingMatchRequest._id === friendData._id}
+                                    isRequesting={inComingMatchRequests.includes(friendData._id)}
                                 />
                             </div>
                         </div>
@@ -85,36 +84,37 @@ const FriendStatus = ({ handleInviteFriendSuccess, userID, friendID, isPlaying, 
             setIsLoading(false)
         }
     }
+    
     return (
         !isLocked && !isPlaying ? (
             <>
                 {alreadyRequested ? (
                     <button className={styles.secondary}>Requested</button>
                 ) : (
-                        <button
-                            className={styles.secondary}
-                            onClick={() => handleInviteFriend(friendID)}
-                            disabled={isLoading}
-                        >
-                            Play
-                            {isLoading && (<img src="/icon/loader.svg" />)}
-                        </button>
-                    )}
+                    <button
+                        className={styles.secondary}
+                        onClick={() => handleInviteFriend(friendID)}
+                        disabled={isLoading}
+                    >
+                        Play
+                        {isLoading && (<img src="/icon/loader.svg" />)}
+                    </button>
+                )}
             </>
         ) : (
-                <div style={{ display: 'flex' }}>
-                    {!isLocked ? (
-                        <>
-                            <img src="/icon/gamepad.png" height="25" width="25" />
-                            <p><small> is playing</small></p>
-                        </>
-                    ) : (
-                            <>
-                                <img src="/icon/lock.svg" height="18" width="18" />
-                                <p><small>{isRequesting ? 'Request you' : 'Not available'} </small></p>
-                            </>
-                        )}
-                </div>
-            )
+            <div style={{ display: 'flex' }}>
+                {!isLocked ? (
+                    <>
+                        <img src="/icon/gamepad.png" height="25" width="25" />
+                        <p><small> is playing</small></p>
+                    </>
+                ) : (
+                    <>
+                        <img src="/icon/lock.svg" height="18" width="18" />
+                        <p><small>{isRequesting ? 'Request you' : 'Not available'} </small></p>
+                    </>
+                )}
+            </div>
+        )
     )
 }

@@ -5,16 +5,16 @@ import styles from '../home.module.css'
 import fetchApi from '../../../utils/apiFetch';
 import { userContext } from '../../../store/user/context';
 import Skeleton from '../../UI/Skeleton';
-import { REMOVE_USER_GAME_INVITATION, SET_USER_GAME_INVITATIONS } from '../../../store/user/actions';
+import { REMOVE_INCOMING_MATCH_REQUEST, SET_INCOMING_MATCH_REQUESTS } from '../../../store/user/actions';
 import useCounterDisplay from '../../hook/useCounterDisplay';
 
 const JoinGameRequesting = () => {
-    const { dispatch, state: { user: { _id: userID }, userGameInvitations } } = useContext(userContext);
+    const { dispatch, state: { user: { _id: userID }, inComingMatchRequests } } = useContext(userContext);
 
-    const getUserGameInvitations = async () => {
+    const getInComingMatchRequests = async () => {
         try {
             const { data } = await fetchApi.get({ url: `/matchs/${userID}/incoming` })
-            dispatch({ type: SET_USER_GAME_INVITATIONS, payload: { userGameInvitations: data } })
+            dispatch({ type: SET_INCOMING_MATCH_REQUESTS, payload: { inComingMatchRequests: data } })
         } catch (error) {
             throw new Error('get games invitations failed')
         } finally {
@@ -41,7 +41,7 @@ const JoinGameRequesting = () => {
     const declineGame = async (opponentID) => {
         try {
             await fetchApi.put({ url: `/matchs/${userID}/decline`, data: { userID: opponentID } });
-            dispatch({ type: REMOVE_USER_GAME_INVITATION, payload: { _id: opponentID } })
+            dispatch({ type: REMOVE_INCOMING_MATCH_REQUEST, payload: { _id: opponentID } })
         } catch (error) {
             throw new Error('decline game failed')
         } finally {
@@ -50,14 +50,14 @@ const JoinGameRequesting = () => {
     }
 
     useEffect(() => {
-        getUserGameInvitations()
+        getInComingMatchRequests()
     }, [])
 
     return (
         <div className={styles.game_request_container}>
             <ul>
-                {userGameInvitations &&
-                    userGameInvitations.map((opponentID) => (
+                {inComingMatchRequests &&
+                    inComingMatchRequests.map((opponentID) => (
                         <FriendRequestingItem
                             declineGame={() => declineGame(opponentID)}
                             joinGame={() => { joinGame(opponentID) }}
@@ -88,7 +88,7 @@ const FriendRequestingItem = ({ opponentID, joinGame, declineGame }) => {
 
     const handleDeclineGame = async () => {
         setIsDeclineLoading(true)
-        await declineGame(); 
+        await declineGame();
         setIsDeclineLoading(false)
     }
 

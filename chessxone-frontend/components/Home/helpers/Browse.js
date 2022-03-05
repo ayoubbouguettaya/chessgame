@@ -4,15 +4,15 @@ import styles from '../home.module.css';
 import fetchApi from '../../../utils/apiFetch'
 import Skeleton from '../../UI/Skeleton';
 import { userContext } from '../../../store/user/context';
-import { USER_GAME_REQUEST_SUCCESS } from '../../../store/user/actions';
+import { OUTGOING_MATCH_REQUEST_SUCCESS } from '../../../store/user/actions';
 
 const Browse = ({ userID }) => {
     const [suggestedUsersId, setSuggestedUsersId] = useState([]);
     const {
         dispatch,
         state: {
-            userGameRequest,
-            userGameInvitations,
+            outGoingMatchRequest,
+            inComingMatchRequests,
             connectedFriends,
         } } = useContext(userContext);
 
@@ -25,7 +25,7 @@ const Browse = ({ userID }) => {
                     lastConnectedUsers.filter(
                         (connectionID) =>
                             connectionID !== userID &&
-                            !userGameInvitations.includes(connectionID)
+                            !inComingMatchRequests.includes(connectionID)
                     ))
 
             } catch (error) {
@@ -33,7 +33,7 @@ const Browse = ({ userID }) => {
         }
 
         fetchFeed()
-    }, [userGameInvitations])
+    }, [inComingMatchRequests])
 
 
     const handleRequestGame = async (playerID) => {
@@ -47,7 +47,7 @@ const Browse = ({ userID }) => {
     }
 
     const handleRequestGameSuccess = (opponentData) => {
-        dispatch({ type: USER_GAME_REQUEST_SUCCESS, payload: opponentData });
+        dispatch({ type: OUTGOING_MATCH_REQUEST_SUCCESS, payload: opponentData });
 
     }
 
@@ -56,7 +56,7 @@ const Browse = ({ userID }) => {
      he can't invite another player similtusly
     */
 
-    if (userGameRequest) {
+    if (outGoingMatchRequest) {
         return (<div />)
     }
 

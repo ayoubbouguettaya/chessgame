@@ -8,8 +8,8 @@ import {
     DONE,
 
     SET_CONNECTED_FRIEND,
-    SET_USER_GAME_REQUEST,
-    SET_USER_GAME_INVITATIONS,
+    SET_OUTGOING_MATCH_REQUEST,
+    SET_INCOMING_MATCH_REQUESTS,
     SET_CONNECTIONS_REQUEST,
 
     FRIEND_STATUS_CHANGED,
@@ -17,14 +17,15 @@ import {
     ADD_NEW_REQUEST_CONNECTION,
     ADD_NEW_FRIEND,
 
-    ADD_NEW_USER_GAME_INVITATION,
-    USER_GAME_REQUEST_SUCCESS,
+    ADD_NEW_INCOMING_MATCH_REQUES,
+    OUTGOING_MATCH_REQUEST_SUCCESS,
     NEW_GAME_READY,
 
     CLEAR_TAB_NOTIFICATION,
-    REMOVE_USER_GAME_REQUEST,
-    REMOVE_USER_GAME_INVITATION,
-    SESSION_SUCCESS
+    REMOVE_OUTGOING_MATCH_REQUEST,
+    REMOVE_INCOMING_MATCH_REQUEST,
+    SESSION_SUCCESS,
+    ADD_NEW_INCOMING_MATCH_REQUEST
 } from './actions';
 
 const globalReducer = (state, action) => {
@@ -53,29 +54,29 @@ const globalReducer = (state, action) => {
             return { ...state, error: { code, message } };
         }
 
-        case SESSION_SUCCESS : {
-            return {...state, isConnected: true}
+        case SESSION_SUCCESS: {
+            return { ...state, isConnected: true }
         }
         case SET_CONNECTED_FRIEND: {
             const { connectedFriends } = action.payload;
             return { ...state, connectedFriends }
         }
 
-        case SET_USER_GAME_REQUEST: {
-            const { userGameRequest } = action.payload;
+        case SET_OUTGOING_MATCH_REQUEST: {
+            const { outGoingMatchRequest } = action.payload;
 
-            return { ...state, userGameRequest }
+            return { ...state, outGoingMatchRequest }
         }
 
-        case SET_USER_GAME_INVITATIONS: {
-            const { userGameInvitations } = action.payload;
+        case SET_INCOMING_MATCH_REQUESTS: {
+            const { inComingMatchRequests } = action.payload;
 
-            return { ...state, userGameInvitations }
+            return { ...state, inComingMatchRequests }
         }
 
         case SET_CONNECTIONS_REQUEST: {
             const { outgoingRequests, incomingRequests } = action.payload;
-            return { ...state, user: { ...state.user, outgoingRequests, incomingRequests } }
+            return { ...state, incomingRequests, outgoingRequests }
         }
 
         case FRIEND_STATUS_CHANGED: {
@@ -113,21 +114,21 @@ const globalReducer = (state, action) => {
             }
         }
 
-        case USER_GAME_REQUEST_SUCCESS: {
+        case OUTGOING_MATCH_REQUEST_SUCCESS: {
             const { _id, userName, picture, tagID } = action.payload;
-            const newUserGameRequest = { _id, userName, picture, tagID ,issuedXXSecondsAgo: 1};
+            const newOutGoingMatchRequest = { _id, userName, picture, tagID, issuedXXSecondsAgo: 1 };
             const { notificationTab } = state;
             notificationTab.push('LOBBY')
-            return { ...state, userGameRequest: newUserGameRequest, notificationTab: [...notificationTab] }
+            return { ...state, outGoingMatchRequest: newOutGoingMatchRequest, notificationTab: [...notificationTab] }
         }
 
-        case ADD_NEW_USER_GAME_INVITATION: {
+        case ADD_NEW_INCOMING_MATCH_REQUEST: {
             const { _id } = action.payload;
-            const { userGameInvitations, connectedFriends, notificationTab } = state;
+            const { inComingMatchRequests, connectedFriends, notificationTab } = state;
             notificationTab.push('LOBBY')
 
-            if (!userGameInvitations.includes(_id)) {
-                userGameInvitations.push(_id);
+            if (!inComingMatchRequests.includes(_id)) {
+                inComingMatchRequests.push(_id);
             }
             /* */
             const index = connectedFriends ? connectedFriends.findIndex((ele) => (ele._id === _id)) : -1;
@@ -137,7 +138,7 @@ const globalReducer = (state, action) => {
             /* */
             return {
                 ...state,
-                userGameInvitations: [...userGameInvitations],
+                inComingMatchRequests: [...inComingMatchRequests],
                 connectedFriends: [...connectedFriends],
                 notificationTab: [...notificationTab]
             }
@@ -145,38 +146,38 @@ const globalReducer = (state, action) => {
 
         case REQUEST_CONNECTION_SUCCESS: {
             const { _id, picture, tagID, userName } = action.payload;
-            const { user, user: { outgoingRequests }, notificationTab } = state;
+            const { outgoingRequests, notificationTab } = state;
             outgoingRequests.push({ _id, picture, tagID, userName });
             notificationTab.push('CONNECTION')
 
             return {
                 ...state,
-                user: { ...user, outgoingRequests },
+                outgoingRequests: [...outgoingRequests],
                 notificationTab: [...notificationTab]
             };
         }
 
         case ADD_NEW_REQUEST_CONNECTION: {
             const { _id, picture, tagID, userName } = action.payload;
-            const { user, user: { incomingRequests }, notificationTab } = state;
+            const { incomingRequests, notificationTab } = state;
             notificationTab.push('CONNECTION')
 
             const index = incomingRequests ? incomingRequests.findIndex((ele) => (ele._id === _id)) : -1;
-           console.log(incomingRequests,index)
+            console.log(incomingRequests, index)
             if (index === -1) {
                 incomingRequests.push({ _id, picture, tagID, userName });
             }
 
             return {
                 ...state,
-                user: { ...user, incomingRequests: [...incomingRequests] },
+                incomingRequests: [...incomingRequests],
                 notificationTab: [...notificationTab]
             };
         }
 
         case ADD_NEW_FRIEND: {
             const { _id, userName, tagID, picture, isLocked = false, isPlaying = false, isConnected = false } = action.payload;
-            const { user, user: { incomingRequests, outgoingRequests }, connectedFriends, notificationTab } = state;
+            const { incomingRequests, outgoingRequests, connectedFriends, notificationTab } = state;
             notificationTab.push('FRIEND')
 
             const friendFound = connectedFriends ? connectedFriends.findIndex((ele) => (ele._id === _id)) : -1;
@@ -197,7 +198,8 @@ const globalReducer = (state, action) => {
             return {
                 ...state,
                 connectedFriends: [...connectedFriends],
-                user: { ...user, incomingRequests, outgoingRequests },
+                outgoingRequests: [...outgoingRequests],
+                incomingRequests: [incomingRequests],
                 notificationTab: [...notificationTab]
             };
         }
@@ -209,23 +211,23 @@ const globalReducer = (state, action) => {
             return {
                 ...state,
                 notificationTab: [...notificationTab],
-                userGameRequest: null,
-                userGameInvitations: []
+                outGoingMatchRequest: null,
+                inComingMatchRequests: []
             }
         }
 
-        case REMOVE_USER_GAME_REQUEST: {
-            return { ...state, userGameRequest: undefined }
+        case REMOVE_OUTGOING_MATCH_REQUEST: {
+            return { ...state, outGoingMatchRequest: undefined }
         }
 
-        case REMOVE_USER_GAME_INVITATION: {
+        case REMOVE_INCOMING_MATCH_REQUEST: {
             const { _id } = action.payload;
-            const { userGameInvitations, connectedFriends } = state;
+            const { inComingMatchRequests, connectedFriends } = state;
 
-            let newUserGameInvitations = new Set(userGameInvitations);
+            let newInComingMatchRequests = new Set(inComingMatchRequests);
 
-            if (userGameInvitations.includes(_id)) {
-                newUserGameInvitations.delete(_id);
+            if (inComingMatchRequests.includes(_id)) {
+                newInComingMatchRequests.delete(_id);
             }
             /* */
             const index = connectedFriends ? connectedFriends.findIndex((ele) => (ele._id === _id)) : -1;
@@ -235,7 +237,7 @@ const globalReducer = (state, action) => {
             /* */
             return {
                 ...state,
-                userGameInvitations: [...newUserGameInvitations],
+                inComingMatchRequests: [...newInComingMatchRequests],
                 connectedFriends: [...connectedFriends],
             }
         }
@@ -244,7 +246,7 @@ const globalReducer = (state, action) => {
             const { notificationTab } = state;
             const { Event } = action.payload;
 
-            const newNotificationTab =  notificationTab.filter((ele) => ele !== Event)
+            const newNotificationTab = notificationTab.filter((ele) => ele !== Event)
 
             return { ...state, notificationTab: [...newNotificationTab] }
         }
