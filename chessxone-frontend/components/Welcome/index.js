@@ -10,7 +10,7 @@ const WelcomeComponent = () => {
     return (
         <div className={styles.welcome_container}>
             <HeroSection />
-            <OffersSection />
+            {/* <OffersSection /> */}
         </div>
     )
 }
