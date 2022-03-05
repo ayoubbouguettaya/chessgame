@@ -64,8 +64,8 @@ const Footer = () => (<footer className={styles.footer_container}>
         <li>
             <ul className={styles.social_media_list}>
                 <li style={{ opacity: '0.5', fontSize: '12px' }} >Authentic</li>
-                <li><img src="/icon/discord.svg" /></li>
-                <li><img src="/icon/instagram.svg" /></li>
+                <li > <a target="_blank" href="https://discord.gg/R8Y5Tu2m"><img src="/icon/discord.svg" /> </a></li>
+                <li> <a target="_blank" href="https://www.instagram.com/chessxone/"> <img src="/icon/instagram.svg" /> </a></li>
             </ul>
             <div style={{ fontSize: '12px' }}>
                 Made for beautiful Minds.
