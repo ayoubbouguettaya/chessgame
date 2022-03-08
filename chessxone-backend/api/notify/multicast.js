@@ -1,4 +1,4 @@
-const {notify} = require("../notify");
+const {outGoingMatchRequestDeclined} = require("./unicast");
 
 exports.outGoingMatchRequestDeclined = async (usersSet, userID) => {
     /* 
@@ -8,7 +8,7 @@ exports.outGoingMatchRequestDeclined = async (usersSet, userID) => {
     */
     try {
         for (let connection of usersSet){
-            await notify.outGoingMatchRequestDeclined(connection._id.toString(),userID);
+            await outGoingMatchRequestDeclined(connection._id.toString(),userID);
         }
 
         return;
