@@ -21,8 +21,9 @@ import {
     CLEAR_TAB_NOTIFICATION
 } from '../../store/user/actions';
 
-import {BLACK} from 'chessxone-shared/constants'
+import { BLACK } from 'chessxone-shared/constants'
 import { NEW_GAME_READY_EVENT } from 'chessxone-shared/events';
+import HistoricalGames from './helpers/HistoricalGames';
 
 const LOBBY = 'LOBBY';
 const CONNECTION = 'CONNECTION';
@@ -35,7 +36,7 @@ const HomeComponent = () => {
 
     useEffect(() => {
         initiliseGlobalEventListners(dispatch)
-        
+
         console.log(BLACK)
 
     }, [])
@@ -74,6 +75,7 @@ const HomeComponent = () => {
                     <JoinGameRequesting />
                 </div>
                 <Browse userID={userID} />
+                <HistoricalGames />
             </div>
             <div className={`${styles.sidebar_container} ${panelToDisplay === FRIEND ? styles.display : ''}`}>
                 <IdLabelCopy playerID={`#${tagID}` || '#000000'} />

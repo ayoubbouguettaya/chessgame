@@ -260,6 +260,11 @@ display: flex;
     padding: 10px;
     border-radius: 8px;
 }
+.historical_games_container{
+    margin-top: 0.8rem;
+    display: flex;
+    flex-wrap: wrap;
+}
 @media (max-width: 768px){
     .sidebar_container{
     width: 100% !important;
