@@ -4,14 +4,15 @@ const matchController = require('../../controllers/match');
 
 const auth = require('../../middlewares/auth');
 const checkUserId = require('../../middlewares/checkUserId');
+const validateQueryuserID = require('../../validations/validateQueryuserID');
 
 const router = express.Router();
 
-router.get('/:userID/outgoing',auth,matchController.getOutGoingRequest)
-router.get('/:userID/incoming',auth,matchController.getInComingRequest);
+router.get('/:userID/outgoing', validateQueryuserID, auth, matchController.getOutGoingRequest)
+router.get('/:userID/incoming', validateQueryuserID, auth, matchController.getInComingRequest);
 
-router.put('/:userID/request',auth,checkUserId,matchController.requestGame)
-router.put('/:userID/accept',auth,checkUserId,matchController.acceptGame)
-router.put('/:userID/decline',auth,checkUserId,matchController.declineGame)
+router.put('/:userID/request', validateQueryuserID, auth, checkUserId, matchController.requestGame)
+router.put('/:userID/accept', validateQueryuserID, auth, checkUserId, matchController.acceptGame)
+router.put('/:userID/decline', validateQueryuserID, auth, checkUserId, matchController.declineGame)
 
 module.exports = router;
