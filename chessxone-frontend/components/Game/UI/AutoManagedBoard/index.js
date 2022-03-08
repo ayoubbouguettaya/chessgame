@@ -59,6 +59,7 @@ const AutoManagedBoard = ({ blackPlayer, context, whitePlayer, keywords, moves,m
         setBoardState(movePiece(boardState, fromSquare, toSquare));
 
         if(moves[offsetMove].length === 8){
+            // TODO: missing a test for pawn promotion
             const piecePromoteTo = parsePieceNotation(moves[offsetMove].charAt(7).toUpperCase());
             console.log('pawn promotion to ',piecePromoteTo);
             boardState[toSquare.row][toSquare.column].piece = piecePromoteTo;

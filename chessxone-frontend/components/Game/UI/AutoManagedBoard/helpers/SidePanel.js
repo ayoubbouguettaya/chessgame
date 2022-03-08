@@ -75,7 +75,7 @@ const CommentSection = ({ comments, toggleComment }) => {
 const MoveDisplay = ({ movesWithNotation, offsetMove }) => (<p className={styles.moves_display}>
     {movesWithNotation.map((move, index) => (
         < >
-            {index % 2 === 0 && (<span style={{ color: '#533', fontSize: '12px' }} >{Math.floor((index + 2) / 2)}.</span>)}
+            {index % 2 === 0 && (<span style={{ color: '#87CEFA', fontSize: '12px',paddingLeft: '10px' }} >{Math.floor((index + 2) / 2)}.</span>)}
             <span className={index === offsetMove && styles.active}  >{move}</span>
         </>
     ))}

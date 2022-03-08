@@ -81,11 +81,12 @@ height: 320px;
 }
 .moves_display span{
   display: inline-block;
-  color: white;
-  padding: 6px;
+  color: #999;
+  padding: 5px;
 }
 .moves_display span.active{
-  color: var(--purple);
+  color: white;
+  background-color: var(--purple);
 }
 .comment_container,
 .indicator_container{
