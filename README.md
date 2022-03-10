@@ -12,10 +12,13 @@ because i think that chess players want always to explore new opponents that's h
 
 ![ui_ux_illustration](https://user-images.githubusercontent.com/63568455/157717067-28e99a0c-16b3-480d-870f-fb53167d5476.jpg)
 
-### the journey:
-a new user is able to authenticate with multiple choice (email/password,continue with google or continue with facebook oauth provider) , a enter a user name and that's it,he will redircted to the Home page  ,
+### the user journey:
+the new user have at first authenticate,the UI shows multiple choice (email/password,continue with google or continue with facebook oauth provider), after authenticate successfully ,a new UI appear shows an avatar photo (provider photo or a default one) the user have to enter a user name to continue.
+the account is created and the user get redirected to the home page .
+in ordre to setup a game ,the user have to invite a user from suggested player UI or he can invite a friend to the application and search him by id "tag Id : 7 characters",the game request expire after a certain time "10 min" ,as soon as the opponent accept the invitation both players get redirected to the Game and that's it. the users are supposed to connect with each others in ordre to re - match and find previous opponent .     
 
-Layout and font: 
+### Layout and font: 
+i think that the dark theme is suited for a gaming application , i sticked with the my fav color palette Eigengrau color with steel-blue `(#16161d | #4682b4)` 
 
 ## about the system Design
 
