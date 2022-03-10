@@ -18,7 +18,11 @@ the account is created and the user get redirected to the home page .
 in ordre to setup a game ,the user have to invite a user from suggested player UI or he can invite a friend to the application and search him by id "tag Id : 7 characters",the game request expire after a certain time "10 min" ,as soon as the opponent accept the invitation both players get redirected to the Game and that's it. the users are supposed to connect with each others in ordre to re - match and find previous opponent .     
 
 ### Layout and font: 
-i think that the dark theme is suited for a gaming application , i sticked with the my fav color palette Eigengrau color with steel-blue `(#16161d | #4682b4)` 
+- i think that the dark theme is suited for a gaming application ,so i sticked with the my fav color palette Eigengrau color with steel-blue `(#16161d | #4682b4)` 
+- i used a kind of border in 2 opposite corner of some Layout {card button group-of-button label } to emphasize that content or CTA  but also to demarcate the design.
+- most icons are uploaded from  [feathericons](https://feathericons.com/)  open source.
+- chess set icon 'gioco' uploaded from an open source project [lichess.org](https://github.com/lichess-org/lila/tree/master/public/piece/gioco)
+-  i search for fonts similaire to `minecraft` but more readable and `karma suture` was just perfect. 
 
 ## about the system Design
 
