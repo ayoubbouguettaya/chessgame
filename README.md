@@ -23,10 +23,9 @@ in ordre to setup a game ,the user have to invite a user from suggested player U
 - most icons are uploaded from  [feathericons](https://feathericons.com/)  open source.
 - chess set icon 'gioco' uploaded from an open source project [lichess.org](https://github.com/lichess-org/lila/tree/master/public/piece/gioco)
 -  i search for fonts similaire to `minecraft` but more readable and `karma suture` was just perfect. 
+-  the logo and the name chessxone from is inspired from a clothing sport brand `wicked1 or wickedOne`.
 
 ## about the system Design
-
-## about the technologies and the implementation
+## technologies and implementation
 
 ## what's coming Next
-
