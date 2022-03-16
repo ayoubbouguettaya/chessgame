@@ -64,7 +64,7 @@ const CommentSection = ({ comments, toggleComment }) => {
         <img width="20" height="20" src="/icon/arrow-left.svg" />
         </button>
         <div>
-            {comments.map((comment) => (<p>{comment}</p>))}
+            {comments.map((comment) => (<p key={comment}>{comment}</p>))}
         </div>
         <input placeholder="sorry you can't comment" />
     </div>
