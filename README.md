@@ -2,7 +2,7 @@
 # CHESSXONE
 chessxone is an online multiplayer chess game , developed from scratch for the love of chess and building cool staff
 
-![screen](https://user-images.githubusercontent.com/63568455/157675920-fdd4d78a-0003-40ac-8ed0-445d59678ad7.jpeg)
+![ezgif com-gif-maker(1)](https://user-images.githubusercontent.com/63568455/169714620-de25bd97-2100-49f5-9f0f-e8dd66a9df11.gif)
 
 
 ## about the UI UX
