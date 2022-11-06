@@ -38,12 +38,12 @@ you can see [this illustration](https://drive.google.com/file/d/1n-9JAr8VObJbvP-
 this [illustatration](https://drive.google.com/file/d/1piTuOTnQCJMVAigSiyOQVNoRRPoj2Hbx/view?usp=sharing) shows the big view of the system, as you can see we are using two Databases (MongoDB and Redis) hosted  on the cloud and we using third party auth (Firebase Auth), the server contains some components (controllers,event handler,ect) as will we dive into details in the following sections , and the client also is represent as combaination of components
 
 ### why we are using Mongo DB and Redis:
-
+mongo db used to stored user information,and other data needed to perssiste and doesn't require instint retreive,for hot data like  syncing the moves and matching players Redis has more sense to be used because it offer more speed and no durability is required means if the redis server failed and the data was cleared the system will not break.  
 ### stateless game vs stateful game:
-
+the game is stateless ,the backend sync the moves between parties like a message broker meaning there is not state of the game stored thus no need to check the validity of the moves on centralised manner ,like we claim in the  next section .
 ### no validation of moves is made in the server:
-
+the validation are done in the browser in both parties to prevent thiefs or at least approve it when 
 ### scaling:
-## technologies and implementation
+scaling web socket connection can be done with each ,thanks to socket.io to provide an adpater for redis.io and having such great tutoriel on the topic
+## technologies and implementation:
 
-## what's coming Next
