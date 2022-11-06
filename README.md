@@ -45,5 +45,8 @@ the game is stateless ,the backend sync the moves between parties like a message
 the validation are done in the browser in both parties to prevent thiefs or at least approve it when 
 ### scaling:
 scaling web socket connection can be done with each ,thanks to socket.io to provide an adpater for redis.io and having such great tutoriel on the topic
-## technologies and implementation:
+## technologies and framework:
+Nextjs Reactjs Nodejs css js ts mongodb redis nginx html/jsx socket.io  
+
+no css library,no extra js library
 
