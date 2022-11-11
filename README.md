@@ -1,4 +1,4 @@
-Update 06 November 2022 :It has been almost 8 month since i 'm was active developing this game.unfortently i don't have time to maintain the existing code and adding new fonctuality ,i was planning to refectore the whole code base ,introducing typescript everywhere and migrating the Backend to Nestjs 
+**Update 06 November 2022** :It has been almost 8 month since i 'm was active developing this game.unfortently i don't have time to maintain the existing code and adding new fonctuality ,i was planning to refectore the whole code base ,introducing typescript everywhere and migrating the Backend to Nestjs 
 .i was enthosiate about the project in the begining i have purshased a chessxone.com domain name and went Online.have to some with higher priority.
 it sad when you drop a personal project.
 
